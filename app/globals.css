@@ -1,0 +1,64 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@theme {
+  --font-sans: var(--font-jakarta), ui-sans-serif, system-ui, sans-serif;
+
+  --color-background: #f8f9ff;
+  --color-surface: #f8f9ff;
+  --color-surface-low: #eff4ff;
+  --color-surface-container: #e6eeff;
+  --color-surface-high: #dde9ff;
+  --color-surface-highest: #d5e3fd;
+  --color-surface-lowest: #ffffff;
+  --color-on-surface: #0d1c2f;
+  --color-on-surface-variant: #57423b;
+  --color-outline: #8a726a;
+  --color-inverse-surface: #233144;
+  --color-inverse-on-surface: #ebf1ff;
+
+  --color-primary: #9f3c16;
+  --color-primary-container: #bf542c;
+  --color-primary-fixed: #ffdbcf;
+  --color-on-primary: #ffffff;
+
+  --color-secondary: #4f5e81;
+  --color-secondary-container: #c5d4fd;
+  --color-secondary-fixed: #d9e2ff;
+
+  --color-tertiary: #006b2c;
+  --color-tertiary-container: #00873a;
+  --color-tertiary-fixed: #7ffc97;
+
+  /* Tokens semánticos que esperan los componentes shadcn/ui */
+  --color-foreground: var(--color-on-surface);
+  --color-primary-foreground: var(--color-on-primary);
+  --color-secondary-foreground: #ffffff;
+  --color-muted: var(--color-surface-container);
+  --color-muted-foreground: var(--color-on-surface-variant);
+  --color-accent: var(--color-surface-high);
+  --color-accent-foreground: var(--color-on-surface);
+  --color-destructive: #ba1a1a;
+  --color-border: #dec0b7;
+  --color-input: #dec0b7;
+  --color-ring: var(--color-primary);
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    scroll-padding-top: 6rem;
+  }
+  body {
+    @apply bg-background text-on-surface antialiased;
+  }
+  :focus-visible {
+    @apply outline-2 outline-offset-2 outline-primary;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}
