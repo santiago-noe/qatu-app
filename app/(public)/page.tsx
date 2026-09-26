@@ -1,3 +1,4 @@
+import { CategoryStrip } from "@/features/public/landing/components/category-strip";
 import { Categories } from "@/features/public/landing/components/categories";
 import { Faq } from "@/features/public/landing/components/faq";
 import { Hero } from "@/features/public/landing/components/hero";
@@ -9,8 +10,9 @@ export default function LandingPage() {
   return (
     <>
       <Hero />
-      <Trust />
+      <CategoryStrip />
       <Categories />
+      <Trust />
       <HowItWorks />
       <Offer />
       <Faq />
