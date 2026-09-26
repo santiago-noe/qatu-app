@@ -4,28 +4,31 @@
 @theme {
   --font-sans: var(--font-jakarta), ui-sans-serif, system-ui, sans-serif;
 
-  --color-background: #f8f9ff;
-  --color-surface: #f8f9ff;
-  --color-surface-low: #eff4ff;
-  --color-surface-container: #e6eeff;
-  --color-surface-high: #dde9ff;
-  --color-surface-highest: #d5e3fd;
+  /* Fondo blanco y superficies neutras cálidas; un solo acento terracota */
+  --color-background: #ffffff;
+  --color-surface: #ffffff;
+  --color-surface-low: #f7f5f3;
+  --color-surface-container: #f0ece8;
+  --color-surface-high: #e9e4df;
+  --color-surface-highest: #e2dcd6;
   --color-surface-lowest: #ffffff;
-  --color-on-surface: #0d1c2f;
-  --color-on-surface-variant: #57423b;
-  --color-outline: #8a726a;
-  --color-inverse-surface: #233144;
-  --color-inverse-on-surface: #ebf1ff;
+  --color-on-surface: #222222;
+  --color-on-surface-variant: #5e5852;
+  --color-outline: #b8b0a8;
+  --color-inverse-surface: #222222;
+  --color-inverse-on-surface: #f7f5f3;
 
-  --color-primary: #9f3c16;
-  --color-primary-container: #bf542c;
-  --color-primary-fixed: #ffdbcf;
+  /* Acento (contraste AA con texto blanco); el hover lo oscurece */
+  --color-primary: #c2512b;
+  --color-primary-container: #a13f1c;
+  --color-primary-fixed: #fdebe3;
   --color-on-primary: #ffffff;
 
-  --color-secondary: #4f5e81;
-  --color-secondary-container: #c5d4fd;
-  --color-secondary-fixed: #d9e2ff;
+  --color-secondary: #6b5f57;
+  --color-secondary-container: #efe7e1;
+  --color-secondary-fixed: #f3ece6;
 
+  /* Verde solo para éxito y verificación */
   --color-tertiary: #006b2c;
   --color-tertiary-container: #00873a;
   --color-tertiary-fixed: #7ffc97;
@@ -33,14 +36,14 @@
   /* Tokens semánticos que esperan los componentes shadcn/ui */
   --color-foreground: var(--color-on-surface);
   --color-primary-foreground: var(--color-on-primary);
-  --color-secondary-foreground: #ffffff;
+  --color-secondary-foreground: var(--color-on-surface);
   --color-muted: var(--color-surface-container);
   --color-muted-foreground: var(--color-on-surface-variant);
-  --color-accent: var(--color-surface-high);
+  --color-accent: var(--color-surface-container);
   --color-accent-foreground: var(--color-on-surface);
   --color-destructive: #ba1a1a;
-  --color-border: #dec0b7;
-  --color-input: #dec0b7;
+  --color-border: #e3ddd7;
+  --color-input: #c9c0b8;
   --color-ring: var(--color-primary);
 }
 
@@ -54,6 +57,13 @@
   }
   :focus-visible {
     @apply outline-2 outline-offset-2 outline-primary;
+  }
+}
+
+@utility no-scrollbar {
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
   }
 }
 
