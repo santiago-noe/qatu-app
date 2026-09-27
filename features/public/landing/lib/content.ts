@@ -30,12 +30,10 @@ export const SEARCH_TABS = {
   rent: {
     label: "Alquilar herramientas",
     placeholder: "Ej. rotomartillo, escalera, hidrolavadora",
-    submitLabel: "Buscar herramientas",
   },
   hire: {
     label: "Contratar servicios",
     placeholder: "Ej. gasfitero para una fuga, pintor",
-    submitLabel: "Buscar técnicos",
   },
 } as const;
 

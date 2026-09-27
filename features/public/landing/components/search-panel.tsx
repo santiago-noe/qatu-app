@@ -1,163 +1,217 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useState } from "react";
+import dynamic from "next/dynamic";
 import { useRouter } from "next/navigation";
-import { Hammer, HardHat, Search } from "lucide-react";
+import type { DateRange } from "react-day-picker";
+import { Search, X } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useMediaQuery } from "@/hooks/use-media-query";
+import { useOverlay } from "@/hooks/use-overlay";
+import { Button } from "@/components/ui/button";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { DISTRICTS, SEARCH_TABS } from "../lib/content";
-import {
-  ALL_ZONES,
-  buildSearchUrl,
-  toSlug,
-  validateDates,
-  type SearchTab,
-} from "../lib/search";
+import { ALL_ZONES, buildSearchUrl, toIsoDate, toSlug, validateDates, type SearchTab } from "../lib/search";
 
-const TAB_ICONS = { rent: HardHat, hire: Hammer } as const;
+// El calendario solo se descarga al abrir "Cuándo".
+const DateRangeCalendar = dynamic(() => import("./date-range-calendar"), {
+  ssr: false,
+  loading: () => <div className="h-[300px] w-[280px]" aria-hidden />,
+});
 
-const segment =
-  "flex flex-1 flex-col gap-0.5 px-5 py-3 text-left md:py-2.5 focus-within:bg-surface-low";
-const segmentLabel = "text-[11px] font-bold uppercase tracking-wide";
-const segmentInput =
-  "w-full bg-transparent text-sm text-on-surface outline-none placeholder:text-on-surface-variant/70";
+const dateFormat = new Intl.DateTimeFormat("es-PE", { day: "numeric", month: "short" });
+
+function formatRange(range: DateRange | undefined): string {
+  if (!range?.from) return "";
+  const from = dateFormat.format(range.from);
+  return range.to ? `${from} – ${dateFormat.format(range.to)}` : `Desde ${from}`;
+}
+
+const ALL_ZONES_LABEL = "Todo Huamanga";
+
+const fieldLabel = "text-[11px] font-semibold uppercase tracking-[0.06em] text-ink-3";
 
 export function SearchPanel() {
   const router = useRouter();
   const [tab, setTab] = useState<SearchTab>("rent");
   const [q, setQ] = useState("");
   const [zone, setZone] = useState<string>(ALL_ZONES);
-  const [from, setFrom] = useState("");
-  const [to, setTo] = useState("");
+  const [range, setRange] = useState<DateRange | undefined>();
   const [error, setError] = useState<string | null>(null);
-  const [today, setToday] = useState<string | undefined>(undefined);
-
-  // La fecha mínima se calcula tras el montaje para no desajustar la hidratación.
-  useEffect(() => {
-    setToday(new Date().toISOString().slice(0, 10));
-  }, []);
+  const [calendarOpen, setCalendarOpen] = useState(false);
+  const [sheetOpen, setSheetOpen] = useState(false);
+  const closeSheet = useCallback(() => setSheetOpen(false), []);
+  useOverlay(sheetOpen, closeSheet);
+  const wide = useMediaQuery("(min-width: 1024px)");
 
   const current = SEARCH_TABS[tab];
+  const zoneLabel = DISTRICTS.find((d) => toSlug(d) === zone) ?? ALL_ZONES_LABEL;
+  const isRent = tab === "rent";
 
-  function onSubmit(e: React.FormEvent) {
+  function submit(e: React.FormEvent) {
     e.preventDefault();
-    const problem = tab === "rent" ? validateDates(from, to) : null;
+    const from = isRent ? toIsoDate(range?.from) : "";
+    const to = isRent ? toIsoDate(range?.to) : "";
+    const problem = validateDates(from, to);
     setError(problem);
     if (problem) return;
+    setSheetOpen(false);
     router.push(buildSearchUrl({ tab, q, zone, from, to }));
   }
 
+  // Campos definidos una vez y usados en la tarjeta de escritorio y en la hoja móvil.
+  const tabs = (
+    <div role="tablist" aria-label="Tipo de búsqueda" className="flex gap-6">
+      {(Object.keys(SEARCH_TABS) as SearchTab[]).map((key) => (
+        <button
+          key={key}
+          type="button"
+          role="tab"
+          aria-selected={key === tab}
+          onClick={() => {
+            setTab(key);
+            setError(null);
+          }}
+          className={cn(
+            "border-b-2 pb-2 text-sm font-medium transition-colors",
+            key === tab ? "border-brand text-ink" : "border-transparent text-ink-2 hover:text-ink",
+          )}
+        >
+          {SEARCH_TABS[key].label}
+        </button>
+      ))}
+    </div>
+  );
+
+  const whatField = (
+    <label className="flex flex-col gap-1">
+      <span className={fieldLabel}>¿Qué necesitas?</span>
+      <input
+        type="text"
+        value={q}
+        onChange={(e) => setQ(e.target.value)}
+        placeholder={current.placeholder}
+        autoComplete="off"
+        className="w-full bg-transparent text-[15px] text-ink outline-none placeholder:text-ink-3 focus-visible:shadow-none focus-visible:outline-none"
+      />
+    </label>
+  );
+
+  const whereField = (
+    <div className="flex flex-col gap-1">
+      <span id="label-donde" className={fieldLabel}>
+        Dónde
+      </span>
+      <Select value={zone} onValueChange={setZone}>
+        <SelectTrigger
+          aria-labelledby="label-donde"
+          className="h-auto w-full border-0 bg-transparent p-0 text-[15px] text-ink shadow-none focus-visible:ring-0"
+        >
+          <SelectValue>{zoneLabel}</SelectValue>
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem value={ALL_ZONES}>{ALL_ZONES_LABEL}</SelectItem>
+          {DISTRICTS.map((d) => (
+            <SelectItem key={d} value={toSlug(d)}>
+              {d}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
+    </div>
+  );
+
+  const rangeLabel = formatRange(range);
+  const whenValue = (
+    <span className={cn("block truncate text-left text-[15px]", rangeLabel ? "text-ink" : "text-ink-3")}>
+      {rangeLabel || "Agrega fechas"}
+    </span>
+  );
+
+  const submitButton = (
+    <Button type="submit" className="h-12 w-full gap-2 rounded-[var(--radius-control)] px-6 text-[15px] md:w-auto">
+      <Search className="size-4" strokeWidth={1.75} aria-hidden />
+      Buscar
+    </Button>
+  );
+
+  const errorMessage = error && (
+    <p role="alert" className="mt-3 text-sm text-destructive">
+      {error}
+    </p>
+  );
+
   return (
-    <div className="mx-auto w-full max-w-4xl">
-      <div
-        role="tablist"
-        aria-label="Tipo de búsqueda"
-        className="mb-4 flex justify-center gap-2"
-      >
-        {(Object.keys(SEARCH_TABS) as SearchTab[]).map((key) => {
-          const Icon = TAB_ICONS[key];
-          const active = key === tab;
-          return (
-            <button
-              key={key}
-              type="button"
-              role="tab"
-              id={`tab-${key}`}
-              aria-selected={active}
-              aria-controls="panel-busqueda"
-              onClick={() => {
-                setTab(key);
-                setError(null);
-              }}
-              className={cn(
-                "inline-flex items-center gap-2 border-b-2 px-4 py-2 text-sm font-semibold transition-colors",
-                active
-                  ? "border-on-surface text-on-surface"
-                  : "border-transparent text-on-surface-variant hover:text-on-surface",
-              )}
-            >
-              <Icon className="size-4" aria-hidden />
-              {SEARCH_TABS[key].label}
-            </button>
-          );
-        })}
-      </div>
+    <div className="mx-auto w-full max-w-[920px]">
+      <div className="mb-4 hidden md:block">{tabs}</div>
 
+      {/* Escritorio: tarjeta con segmentos separados por divisores de 1 px */}
       <form
-        id="panel-busqueda"
-        role="tabpanel"
-        aria-labelledby={`tab-${tab}`}
-        onSubmit={onSubmit}
-        className="flex flex-col overflow-hidden rounded-3xl border border-border bg-surface-lowest shadow-[0_6px_24px_rgba(0,0,0,0.08)] md:flex-row md:items-stretch md:divide-x md:divide-border md:rounded-full"
+        onSubmit={submit}
+        className="hidden items-center rounded-[var(--radius-card)] border border-line bg-bg p-2 shadow-[var(--shadow-card)] md:flex"
       >
-        <label className={cn(segment, "md:flex-[1.6] md:pl-8")}>
-          <span className={segmentLabel}>¿Qué necesitas?</span>
-          <input
-            type="text"
-            value={q}
-            onChange={(e) => setQ(e.target.value)}
-            placeholder={current.placeholder}
-            autoComplete="off"
-            className={segmentInput}
-          />
-        </label>
-
-        <label className={segment}>
-          <span className={segmentLabel}>Dónde</span>
-          <select
-            value={zone}
-            onChange={(e) => setZone(e.target.value)}
-            className={cn(segmentInput, "cursor-pointer")}
-          >
-            <option value={ALL_ZONES}>Todo Huamanga</option>
-            {DISTRICTS.map((d) => (
-              <option key={d} value={toSlug(d)}>
-                {d}
-              </option>
-            ))}
-          </select>
-        </label>
-
-        {tab === "rent" && (
-          <>
-            <label className={segment}>
-              <span className={segmentLabel}>Desde</span>
-              <input
-                type="date"
-                value={from}
-                min={today}
-                onChange={(e) => setFrom(e.target.value)}
-                className={segmentInput}
-              />
-            </label>
-            <label className={segment}>
-              <span className={segmentLabel}>Hasta</span>
-              <input
-                type="date"
-                value={to}
-                min={from || today}
-                onChange={(e) => setTo(e.target.value)}
-                className={segmentInput}
-              />
-            </label>
-          </>
+        <div className="min-w-0 flex-[1.4] px-4 py-1.5">{whatField}</div>
+        <div className="min-w-0 flex-1 border-l border-line px-4 py-1.5">{whereField}</div>
+        {isRent && (
+          <div className="min-w-0 flex-1 border-l border-line px-4 py-1.5">
+            <Popover open={calendarOpen} onOpenChange={setCalendarOpen}>
+              <PopoverTrigger asChild>
+                <button type="button" className="flex w-full flex-col gap-1 text-left">
+                  <span className={fieldLabel}>Cuándo</span>
+                  {whenValue}
+                </button>
+              </PopoverTrigger>
+              <PopoverContent align="end" className="w-auto p-0">
+                {calendarOpen && <DateRangeCalendar value={range} onChange={setRange} months={wide ? 2 : 1} />}
+              </PopoverContent>
+            </Popover>
+          </div>
         )}
-
-        <div className="flex items-center justify-end p-2 md:pr-2.5">
-          <button
-            type="submit"
-            aria-label={current.submitLabel}
-            className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-full bg-primary px-5 text-sm font-semibold text-on-primary transition-colors hover:bg-primary-container md:w-12 md:px-0"
-          >
-            <Search className="size-5" aria-hidden />
-            <span className="md:sr-only">{current.submitLabel}</span>
-          </button>
-        </div>
+        <div className="pl-2">{submitButton}</div>
       </form>
+      <div className="hidden md:block">{errorMessage}</div>
 
-      {error && (
-        <p role="alert" className="mt-3 text-center text-sm font-semibold text-destructive">
-          {error}
-        </p>
+      {/* Móvil: un solo campo que abre la hoja completa */}
+      <button
+        type="button"
+        onClick={() => setSheetOpen(true)}
+        className="flex w-full items-center gap-3 rounded-[var(--radius-card)] border border-line bg-bg px-4 py-3 text-left shadow-[var(--shadow-card)] md:hidden"
+      >
+        <Search className="size-5 shrink-0 text-ink-2" strokeWidth={1.5} aria-hidden />
+        <span className="flex min-w-0 flex-col">
+          <span className={fieldLabel}>¿Qué necesitas?</span>
+          <span className={cn("truncate text-[15px]", q ? "text-ink" : "text-ink-3")}>{q || current.placeholder}</span>
+        </span>
+      </button>
+
+      {sheetOpen && (
+        <div role="dialog" aria-modal="true" aria-label="Buscar en Qatu" className="fixed inset-0 z-[60] flex flex-col bg-bg md:hidden">
+          <div className="flex items-center justify-between border-b border-line px-4 py-2">
+            <span className="text-sm font-semibold text-ink">Buscar en Qatu</span>
+            <button type="button" onClick={closeSheet} aria-label="Cerrar búsqueda" className="-mr-2 inline-flex size-11 items-center justify-center">
+              <X className="size-6" strokeWidth={1.5} />
+            </button>
+          </div>
+          <form onSubmit={submit} className="flex flex-1 flex-col overflow-y-auto">
+            <div className="flex-1 space-y-4 px-4 py-5">
+              {tabs}
+              <div className="divide-y divide-line rounded-[var(--radius-card)] border border-line">
+                <div className="p-4">{whatField}</div>
+                <div className="p-4">{whereField}</div>
+                {isRent && (
+                  <div className="space-y-2 p-4">
+                    <span className={cn(fieldLabel, "block")}>Cuándo</span>
+                    {whenValue}
+                    <DateRangeCalendar value={range} onChange={setRange} />
+                  </div>
+                )}
+              </div>
+              {errorMessage}
+            </div>
+            <div className="border-t border-line p-4">{submitButton}</div>
+          </form>
+        </div>
       )}
     </div>
   );

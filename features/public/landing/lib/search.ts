@@ -21,6 +21,15 @@ export function toSlug(text: string): string {
     .replace(/^-+|-+$/g, "");
 }
 
+/** Fecha local a yyyy-mm-dd, sin pasar por UTC (en Lima, toISOString puede cambiar el día). */
+export function toIsoDate(date: Date | undefined): string {
+  if (!date) return "";
+  const y = date.getFullYear();
+  const m = String(date.getMonth() + 1).padStart(2, "0");
+  const d = String(date.getDate()).padStart(2, "0");
+  return `${y}-${m}-${d}`;
+}
+
 /** Fechas ISO (yyyy-mm-dd): "hasta" no puede ser anterior a "desde". */
 export function validateDates(from: string, to: string): string | null {
   if (from && to && to < from) {

@@ -2,7 +2,7 @@ import { Container } from "@/components/layout/container";
 import { SEARCH_SECTION } from "../lib/content";
 import { SearchPanel } from "./search-panel";
 
-// Destino del botón "Explora ahora" y del ícono de búsqueda móvil (#buscar).
+// Destino del botón "Alquilar ahora" del hero y del ícono de búsqueda móvil (#buscar).
 export function SearchSection() {
   return (
     <section id="buscar" aria-labelledby="buscar-titulo" className="py-14 md:py-20">
