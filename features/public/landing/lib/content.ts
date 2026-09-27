@@ -1,18 +1,17 @@
 import type { LucideIcon } from "lucide-react";
 import {
   BadgeCheck,
-  Camera,
   Droplets,
   Hammer,
   HardHat,
   KeyRound,
   Lock,
+  MapPin,
   PaintRoller,
   Ruler,
   Scale,
   Scissors,
   Shovel,
-  ShieldCheck,
   Sparkles,
   Wallet,
   Wrench,
@@ -42,21 +41,29 @@ export const SEARCH_TABS = {
 
 export interface HeroFeature {
   icon: LucideIcon;
-  label: string;
+  title: string;
+  text: string;
 }
 
-// Hero único (design.md): solo promete lo que existe en el piloto (docs/05).
+export interface CallToAction {
+  label: string;
+  href: string;
+}
+
+// Hero (design.md "Obra"): solo promete lo que existe en el piloto (docs/05). Sin cifras ni reseñas.
 export const HERO = {
-  title: ["Herramientas", "y servicios"],
-  titleMuted: "a tu alcance",
+  eyebrow: "Alquiler de herramientas y servicios",
+  title: ["Las herramientas", "que tu obra necesita,"],
+  titleHighlight: "cuando las necesitas.",
   subtitle:
-    "Encuentra, alquila o contrata lo que necesitas en Huamanga, de forma segura, fácil y desde un solo lugar.",
+    "Alquila equipos de construcción, jardinería, limpieza, pintura y más, o contrata a un técnico. Fácil, seguro y con precios claros en Huamanga.",
+  primaryCta: { label: "Alquilar ahora", href: "#buscar" } satisfies CallToAction,
+  secondaryCta: { label: "Cómo funciona", href: "#como-funciona" } satisfies CallToAction,
   features: [
-    { icon: ShieldCheck, label: "Garantía documentada" },
-    { icon: Camera, label: "Evidencia fotográfica" },
-    { icon: BadgeCheck, label: "Cuentas verificadas" },
+    { icon: BadgeCheck, title: "Cuentas verificadas", text: "Validamos la identidad" },
+    { icon: Wallet, title: "Precios claros", text: "Ves el total antes" },
+    { icon: MapPin, title: "Soporte local", text: "Estamos en Ayacucho" },
   ] satisfies HeroFeature[],
-  cta: { label: "Explora ahora", href: "#buscar" },
   image: {
     src: "/images/hero-1.webp",
     alt: "Mujer sosteniendo un rotomartillo en un taller",
