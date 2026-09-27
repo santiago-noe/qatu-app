@@ -1,50 +1,69 @@
 import Link from "next/link";
-import { CITY, LEGAL_LINKS, NAV_LINKS } from "@/lib/site";
+import { ArrowRight } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { LEGAL_LINKS, NAME_MEANING, NAV_LINKS, SITE_ABOUT, SITE_TAGLINE, type NavLink } from "@/lib/site";
+import { ROUTES } from "@/lib/session";
+import { cn } from "@/lib/utils";
+import { Container } from "./container";
+import { Logo } from "./logo";
+
+const LIBRO = "/libro-de-reclamaciones";
+
+function LinkColumn({ title, links }: { title: string; links: NavLink[] }) {
+  return (
+    <nav aria-label={title}>
+      <p className="mb-4 text-sm font-semibold text-white">{title}</p>
+      <ul className="space-y-2.5 text-sm">
+        {links.map((l) => (
+          <li key={l.href}>
+            <Link
+              href={l.href}
+              className={cn(
+                "text-footer-ink hover:text-white",
+                // Libro de Reclamaciones siempre visible (INDECOPI)
+                l.href === LIBRO && "inline-block rounded-[var(--radius-control)] border border-footer-ink-2 px-2.5 py-1",
+              )}
+            >
+              {l.label}
+            </Link>
+          </li>
+        ))}
+      </ul>
+    </nav>
+  );
+}
 
 export function SiteFooter() {
   return (
-    <footer className="bg-inverse-surface text-inverse-on-surface">
-      <div className="mx-auto grid max-w-[1200px] gap-8 px-4 py-10 md:grid-cols-3 md:px-6">
-        <div className="space-y-2">
-          <p className="text-2xl font-extrabold text-primary-fixed">Qatu</p>
-          <p className="max-w-xs text-sm text-inverse-on-surface/80">
-            Alquiler de herramientas y servicios de oficios en {CITY}. Qatu es un
-            intermediario: los técnicos son profesionales independientes.
-          </p>
+    <footer className="rounded-t-[24px] bg-footer">
+      <Container className="grid gap-10 py-12 md:grid-cols-2 lg:grid-cols-[1.4fr_1fr_1fr_1.3fr] lg:py-16">
+        <div className="space-y-4">
+          <Logo variant="light" />
+          <p className="text-sm font-medium text-brand">{SITE_TAGLINE}</p>
+          <p className="max-w-xs text-sm text-footer-ink">{SITE_ABOUT}</p>
         </div>
 
-        <nav aria-label="Producto">
-          <p className="mb-3 text-xs font-bold uppercase tracking-wider text-inverse-on-surface/60">
-            Qatu
-          </p>
-          <ul className="space-y-2 text-sm">
-            {NAV_LINKS.map((l) => (
-              <li key={l.href}>
-                <a href={l.href} className="hover:underline">
-                  {l.label}
-                </a>
-              </li>
-            ))}
-          </ul>
-        </nav>
+        <LinkColumn title="Qatu" links={NAV_LINKS} />
+        <LinkColumn title="Legal" links={LEGAL_LINKS} />
 
-        <nav aria-label="Legal">
-          <p className="mb-3 text-xs font-bold uppercase tracking-wider text-inverse-on-surface/60">
-            Legal
-          </p>
-          <ul className="space-y-2 text-sm">
-            {LEGAL_LINKS.map((l) => (
-              <li key={l.href}>
-                <Link href={l.href} className="hover:underline">
-                  {l.label}
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </nav>
-      </div>
-      <div className="border-t border-white/10 px-4 py-4 text-center text-xs text-inverse-on-surface/60">
-        © {new Date().getFullYear()} Qatu. Todos los derechos reservados.
+        {/* Sin lista de espera aprobada, el pie invita a crear cuenta (design.md, sección 2) */}
+        <div className="space-y-4">
+          <p className="text-sm font-semibold text-white">Crea tu cuenta gratis</p>
+          <p className="text-sm text-footer-ink">Alquila, contrata u ofrece en Huamanga desde un solo lugar.</p>
+          <Button asChild className="h-11 rounded-[var(--radius-control)] bg-brand px-5 text-ink hover:bg-brand/90">
+            <Link href={ROUTES.signin}>
+              Registrarme
+              <ArrowRight className="size-4" strokeWidth={2} aria-hidden />
+            </Link>
+          </Button>
+        </div>
+      </Container>
+
+      <div className="border-t border-white/10">
+        <Container className="flex flex-col gap-2 py-5 text-xs text-footer-ink-2 sm:flex-row sm:justify-between">
+          <p>© {new Date().getFullYear()} Qatu. Todos los derechos reservados.</p>
+          <p>{NAME_MEANING}</p>
+        </Container>
       </div>
     </footer>
   );

@@ -25,3 +25,7 @@ export const LEGAL_LINKS: NavLink[] = [
 
 // Barra de aviso: solo información real, nunca promociones (design.md, sección 2).
 export const ANNOUNCEMENT = `Piloto en ${PILOT_AREA}, ${CITY} · Regístrate gratis`;
+
+export const SITE_TAGLINE = "Alquila. Contrata. Construye.";
+export const SITE_ABOUT = "Conectamos herramientas y personas para construir un mejor Ayacucho.";
+export const NAME_MEANING = "«Qatu» significa mercado en quechua.";

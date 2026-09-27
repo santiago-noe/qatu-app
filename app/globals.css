@@ -44,13 +44,6 @@
   --color-border: var(--color-line);
   --color-input: var(--color-line);
   --color-ring: var(--color-brand);
-
-  /* Alias que aún usa el pie de página: se eliminan al rehacerlo */
-  --color-surface: var(--color-bg);
-  --color-on-surface: var(--color-ink);
-  --color-inverse-surface: var(--color-footer);
-  --color-inverse-on-surface: var(--color-footer-ink);
-  --color-primary-fixed: var(--color-brand-soft);
 }
 
 @layer base {
