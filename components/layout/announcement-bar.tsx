@@ -1,8 +1,10 @@
-import { ANNOUNCEMENT } from "@/features/public/landing/lib/content";
+import { MapPin } from "lucide-react";
+import { ANNOUNCEMENT } from "@/lib/site";
 
 export function AnnouncementBar() {
   return (
-    <div className="flex h-10 items-center justify-center bg-ink px-4 text-center text-[13px] text-white md:text-sm">
+    <div className="flex h-8 items-center justify-center gap-2 bg-footer px-4 text-[13px] text-white">
+      <MapPin className="size-4 shrink-0 text-brand" strokeWidth={1.5} aria-hidden />
       <p className="truncate">{ANNOUNCEMENT}</p>
     </div>
   );
