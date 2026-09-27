@@ -1,43 +1,29 @@
-import { HIRE_STEPS, RENT_STEPS, type Step } from "../lib/content";
+import { Container } from "@/components/layout/container";
+import { HOW_IT_WORKS } from "../lib/content";
 
-function StepList({ title, steps }: { title: string; steps: Step[] }) {
-  return (
-    <div className="space-y-5 rounded-3xl bg-surface-lowest p-6 shadow-sm">
-      <h3 className="text-xl font-bold">{title}</h3>
-      <ol className="space-y-4">
-        {steps.map((s, i) => (
-          <li key={s.title} className="flex gap-3">
-            <span className="flex size-8 shrink-0 items-center justify-center rounded-full bg-primary-fixed text-sm font-bold text-primary">
-              {i + 1}
-            </span>
-            <div>
-              <h4 className="font-bold">{s.title}</h4>
-              <p className="text-sm text-on-surface-variant">{s.text}</p>
-            </div>
-          </li>
-        ))}
-      </ol>
-    </div>
-  );
-}
-
+// Franja amarilla de marca con los 4 pasos; texto gris oscuro sobre amarillo (8,41:1).
 export function HowItWorks() {
   return (
-    <section id="como-funciona" className="bg-surface py-14" aria-labelledby="h-como">
-      <div className="mx-auto max-w-[1200px] space-y-8 px-4 md:px-6">
-        <div className="mx-auto max-w-2xl space-y-2 text-center">
-          <p className="text-xs font-bold uppercase tracking-widest text-primary">
-            Simple y transparente
-          </p>
-          <h2 id="h-como" className="text-2xl font-extrabold md:text-3xl">
-            ¿Cómo funciona Qatu?
-          </h2>
-        </div>
-        <div className="grid gap-6 lg:grid-cols-2">
-          <StepList title="Para alquilar herramientas" steps={RENT_STEPS} />
-          <StepList title="Para contratar un oficio" steps={HIRE_STEPS} />
-        </div>
-      </div>
+    <section id="como-funciona" aria-labelledby="como-funciona-titulo" className="bg-brand">
+      <Container className="grid gap-8 py-10 md:py-12 lg:grid-cols-[200px_1fr] lg:items-center">
+        <h2 id="como-funciona-titulo" className="text-lg font-bold uppercase tracking-[0.02em] text-ink">
+          {HOW_IT_WORKS.title}
+        </h2>
+
+        <ol className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4 lg:gap-0 lg:divide-x lg:divide-ink/20">
+          {HOW_IT_WORKS.steps.map(({ icon: Icon, title, text }, i) => (
+            <li key={title} className="flex items-start gap-4 lg:px-6 lg:first:pl-0 lg:last:pr-0">
+              <Icon className="mt-0.5 size-8 shrink-0 text-ink" strokeWidth={1.5} aria-hidden />
+              <div>
+                <p className="text-[15px] font-semibold text-ink">
+                  {i + 1}. {title}
+                </p>
+                <p className="text-sm leading-snug text-ink/80">{text}</p>
+              </div>
+            </li>
+          ))}
+        </ol>
+      </Container>
     </section>
   );
 }

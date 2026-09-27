@@ -2,12 +2,16 @@ import type { LucideIcon } from "lucide-react";
 import type { SearchTab } from "./search";
 import {
   BadgeCheck,
+  CalendarDays,
+  CircleCheck,
+  Handshake,
   Hammer,
   KeyRound,
   Lock,
   MapPin,
   PaintRoller,
   Ruler,
+  Search,
   Scale,
   Scissors,
   Sparkles,
@@ -197,39 +201,21 @@ export const TRADE_SECTION: CategorySectionData = {
 
 
 export interface Step {
+  icon: LucideIcon;
   title: string;
   text: string;
 }
 
-export const RENT_STEPS: Step[] = [
-  {
-    title: "Busca y reserva",
-    text: "Explora las herramientas disponibles en tu zona y elige las fechas que necesitas.",
-  },
-  {
-    title: "Coordina la entrega",
-    text: "Revisa el desglose total, incluida la garantía, y acuerda entrega o recojo. Ambos registran el estado con fotos.",
-  },
-  {
-    title: "Usa y devuelve",
-    text: "Al devolver la herramienta en buen estado, la garantía se cierra según las condiciones acordadas.",
-  },
-];
-
-export const HIRE_STEPS: Step[] = [
-  {
-    title: "Cuenta qué necesitas",
-    text: "Describe el trabajo, agrega fotos y compara técnicos por oficio y zona.",
-  },
-  {
-    title: "Reserva o pide cotización",
-    text: "Contrata un paquete con precio fijo o recibe cotizaciones de varios técnicos y elige.",
-  },
-  {
-    title: "Recibe el servicio y opina",
-    text: "Confirma el trabajo terminado y deja una reseña verificada para ayudar a otros vecinos.",
-  },
-];
+// Franja "Cómo funciona" (design.md, sección 4). El delivery es opcional: "Recoge o recibe" (docs/02).
+export const HOW_IT_WORKS = {
+  title: "¿Cómo funciona Qatu?",
+  steps: [
+    { icon: Search, title: "Busca", text: "Encuentra el equipo o el técnico que necesitas." },
+    { icon: CalendarDays, title: "Reserva", text: "Elige fechas y confirma con el total a la vista." },
+    { icon: Handshake, title: "Recoge o recibe", text: "Coordina el recojo, el delivery o la visita." },
+    { icon: CircleCheck, title: "Usa y devuelve", text: "La entrega y la devolución quedan registradas." },
+  ] satisfies Step[],
+} as const;
 
 export const OFFER = {
   heading:

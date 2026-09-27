@@ -14,8 +14,8 @@ export default function LandingPage() {
       <SearchSection />
       <CategorySection section={TOOL_SECTION} />
       <CategorySection section={TRADE_SECTION} />
-      <Trust />
       <HowItWorks />
+      <Trust />
       <Offer />
       <Faq />
     </>
