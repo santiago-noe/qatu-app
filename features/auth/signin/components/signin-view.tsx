@@ -1,9 +1,10 @@
 import { ROUTES } from "@/lib/session";
 import { AuthCard } from "@/features/auth/shared/components/auth-card";
 import { TextLink } from "@/features/auth/shared/components/text-link";
+import { authErrorMessage } from "@/features/auth/shared/lib/auth-errors";
 import { SigninForm } from "./signin-form";
 
-export function SigninView({ next }: { next?: string }) {
+export function SigninView({ next, error }: { next?: string; error?: string }) {
   return (
     <AuthCard
       title="Inicia sesión"
@@ -14,7 +15,7 @@ export function SigninView({ next }: { next?: string }) {
         </>
       }
     >
-      <SigninForm next={next} />
+      <SigninForm next={next} initialAlert={authErrorMessage(error)} />
     </AuthCard>
   );
 }
