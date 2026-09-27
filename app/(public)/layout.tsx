@@ -9,7 +9,8 @@ export default function PublicLayout({
   return (
     <>
       <SiteHeader />
-      <main className="pt-[104px]">{children}</main>
+      {/* Cabecera fija (64 px) + barra de aviso (32 px) */}
+      <main className="pt-24">{children}</main>
       <SiteFooter />
     </>
   );
