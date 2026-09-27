@@ -1,6 +1,6 @@
 import Link from "next/link";
 import type { LucideIcon } from "lucide-react";
-import { TOOL_CATEGORIES, TRADE_CATEGORIES } from "../lib/content";
+import { TRADE_CATEGORIES } from "../lib/content";
 import { buildSearchUrl, toSlug, type SearchTab } from "../lib/search";
 
 interface RowProps {
@@ -77,30 +77,19 @@ function Row({ id, eyebrow, title, description, tab, tone, items }: RowProps) {
   );
 }
 
-// Categorías informativas: nunca muestran precios ni disponibilidad que no existan.
+// Temporal: fila de oficios; se reemplaza por la sección de oficios en el paso 7.
 export function Categories() {
   return (
-    <>
+    <div className="bg-surface-low">
       <Row
-        id="herramientas"
-        eyebrow="Alquiler"
-        title="Herramientas para tu obra"
-        description="Las categorías con las que empezamos en el piloto de Huamanga."
-        tab="rent"
-        tone="bg-primary-fixed text-primary"
-        items={TOOL_CATEGORIES}
+        id="servicios"
+        eyebrow="Servicios"
+        title="Oficios para tu hogar o negocio"
+        description="Contrata con precio fijo o pide cotizaciones a varios técnicos."
+        tab="hire"
+        tone="bg-bg-raised text-ink"
+        items={TRADE_CATEGORIES}
       />
-      <div className="bg-surface-low">
-        <Row
-          id="servicios"
-          eyebrow="Servicios"
-          title="Oficios para tu hogar o negocio"
-          description="Contrata con precio fijo o pide cotizaciones a varios técnicos."
-          tab="hire"
-          tone="bg-bg-raised text-ink"
-          items={TRADE_CATEGORIES}
-        />
-      </div>
-    </>
+    </div>
   );
 }

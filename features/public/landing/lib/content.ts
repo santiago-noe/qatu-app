@@ -1,9 +1,7 @@
 import type { LucideIcon } from "lucide-react";
 import {
   BadgeCheck,
-  Droplets,
   Hammer,
-  HardHat,
   KeyRound,
   Lock,
   MapPin,
@@ -11,7 +9,6 @@ import {
   Ruler,
   Scale,
   Scissors,
-  Shovel,
   Sparkles,
   Wallet,
   Wrench,
@@ -103,43 +100,55 @@ export const TRUST_ITEMS: TrustItem[] = [
   },
 ];
 
-export interface ToolCategory {
-  icon: LucideIcon;
-  tag: string;
+export interface SectionIntro {
+  eyebrow: string;
   title: string;
-  text: string;
+  description: string;
 }
+
+export interface ImageAsset {
+  src: string;
+  alt: string;
+}
+
+export interface ToolCategory {
+  name: string;
+  description: string;
+  image: ImageAsset;
+}
+
+// Sin precios, cantidades ni "más alquiladas" (design.md, sección 2).
+export const TOOL_CATEGORIES_INTRO: SectionIntro = {
+  eyebrow: "Categorías",
+  title: "Encuentra lo que necesitas",
+  description: "Las categorías con las que empezamos el piloto en Huamanga.",
+};
 
 export const TOOL_CATEGORIES: ToolCategory[] = [
   {
-    icon: HardHat,
-    tag: "Construcción",
-    title: "Rotomartillos y mezcladoras",
-    text: "Equipos para perforar, demoler y mezclar en tu obra.",
+    name: "Construcción",
+    description: "Rotomartillos, mezcladoras y más equipos para tu obra.",
+    image: { src: "/images/categories/construccion.webp", alt: "Herramientas eléctricas y equipos de construcción" },
   },
   {
-    icon: Ruler,
-    tag: "Carpintería y taller",
-    title: "Sierras, lijadoras y cepilladoras",
-    text: "Para armar muebles, techos y trabajos en madera.",
+    name: "Carpintería y taller",
+    description: "Sierras, lijadoras y cepilladoras para madera.",
+    image: { src: "/images/categories/carpinteria.webp", alt: "Herramientas de carpintería sobre un banco de trabajo" },
   },
   {
-    icon: Shovel,
-    tag: "Jardín",
-    title: "Podadoras, desbrozadoras y motosierras",
-    text: "Para limpiar terrenos y mantener jardines.",
+    name: "Jardín",
+    description: "Podadoras, desbrozadoras y motosierras.",
+    image: { src: "/images/categories/jardin.webp", alt: "Cortadora de césped y desbrozadora sobre el pasto" },
   },
   {
-    icon: Droplets,
-    tag: "Limpieza",
-    title: "Hidrolavadoras y aspiradoras industriales",
-    text: "Limpieza a presión para fachadas, patios y locales.",
+    name: "Limpieza",
+    description: "Hidrolavadoras y aspiradoras industriales.",
+    image: { src: "/images/categories/limpieza.webp", alt: "Balde con implementos de limpieza" },
   },
   {
-    icon: PaintRoller,
-    tag: "Pintura",
-    title: "Compresoras, pistolas y escaleras",
-    text: "Todo lo que necesitas para pintar y trabajar en altura.",
+    name: "Pintura",
+    description: "Compresoras, pistolas y escaleras.",
+    image: { src: "/images/categories/pintura.webp", alt: "Rodillo, brocha, cinta y balde de pintura" },
   },
 ];
 
