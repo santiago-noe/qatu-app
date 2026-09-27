@@ -31,7 +31,7 @@ export function SiteHeader() {
 
           <nav aria-label="Principal" className="hidden items-center gap-6 lg:flex">
             {HEADER_LINKS.map((l) => (
-              <a key={l.href} href={l.href} className="text-sm text-ink hover:text-accent">
+              <a key={l.href} href={l.href} className="text-sm text-ink hover:text-brand-text">
                 {l.label}
               </a>
             ))}
@@ -53,13 +53,13 @@ export function SiteHeader() {
 
           <div className="ml-auto flex items-center gap-1 md:ml-0">
             <p className="hidden text-sm text-ink sm:block">
-              <Link href={ROUTES.signin} className="hover:text-accent">
+              <Link href={ROUTES.signin} className="hover:text-brand-text">
                 Iniciar sesión
               </Link>
               <span className="px-1 text-ink-3" aria-hidden>
                 /
               </span>
-              <Link href={ROUTES.signin} className="hover:text-accent">
+              <Link href={ROUTES.signin} className="hover:text-brand-text">
                 Registrarme
               </Link>
             </p>
