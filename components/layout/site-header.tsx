@@ -67,7 +67,7 @@ export function SiteHeader() {
               Iniciar sesión
             </Link>
             <Button asChild className="hidden h-10 rounded-[var(--radius-control)] px-5 text-[13px] sm:inline-flex">
-              <Link href={ROUTES.signin}>Registrarme</Link>
+              <Link href={ROUTES.signup}>Registrarme</Link>
             </Button>
             <a
               href="/#buscar"
@@ -109,7 +109,7 @@ export function SiteHeader() {
           </ul>
           <div className="mt-6 flex flex-col gap-3">
             <Button asChild className="h-12 rounded-[var(--radius-control)]">
-              <Link href={ROUTES.signin}>Registrarme</Link>
+              <Link href={ROUTES.signup}>Registrarme</Link>
             </Button>
             <Button asChild variant="outline" className="h-12 rounded-[var(--radius-control)]">
               <Link href={ROUTES.signin}>Iniciar sesión</Link>
