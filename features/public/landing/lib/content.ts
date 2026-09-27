@@ -19,9 +19,6 @@ import {
   Zap,
 } from "lucide-react";
 
-export const CITY = "Ayacucho";
-export const PILOT_AREA = "Huamanga";
-
 export const DISTRICTS = [
   "Huamanga",
   "San Juan Bautista",
@@ -29,25 +26,6 @@ export const DISTRICTS = [
   "Jesús Nazareno",
   "Andrés Avelino Cáceres",
 ] as const;
-
-export const NAV_LINKS = [
-  { label: "Alquilar herramientas", href: "#herramientas" },
-  { label: "Contratar servicios", href: "#servicios" },
-  { label: "Cómo funciona", href: "#como-funciona" },
-  { label: "Ofrece en Qatu", href: "#ofrece-en-qatu" },
-  { label: "Preguntas frecuentes", href: "#preguntas-frecuentes" },
-] as const;
-
-// Enlaces cortos de la cabecera (el menú móvil usa NAV_LINKS completo).
-export const HEADER_LINKS = [
-  { label: "Alquilar", href: "/#herramientas" },
-  { label: "Contratar", href: "/#servicios" },
-  { label: "Cómo funciona", href: "/#como-funciona" },
-  { label: "Ofrece en Qatu", href: "/#ofrece-en-qatu" },
-] as const;
-
-// Barra negra de aviso: solo información real, nunca promociones (design.md, sección 2).
-export const ANNOUNCEMENT = `Piloto en ${PILOT_AREA}, ${CITY} · Registrarte es gratis`;
 
 export const SEARCH_TABS = {
   rent: {
@@ -299,16 +277,3 @@ export const FAQ: FaqItem[] = [
   },
 ];
 
-export const FOOTER_LINKS = {
-  legal: [
-    { label: "Términos y condiciones", href: "/terminos" },
-    { label: "Política de privacidad", href: "/privacidad" },
-    { label: "Libro de Reclamaciones", href: "/libro-de-reclamaciones" },
-  ],
-  product: [
-    { label: "Alquilar herramientas", href: "#herramientas" },
-    { label: "Contratar servicios", href: "#servicios" },
-    { label: "Cómo funciona", href: "#como-funciona" },
-    { label: "Ofrece en Qatu", href: "#ofrece-en-qatu" },
-  ],
-} as const;
