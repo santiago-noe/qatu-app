@@ -1,4 +1,5 @@
 import type { LucideIcon } from "lucide-react";
+import { ROUTES } from "@/lib/session";
 import type { SearchTab } from "./search";
 import {
   BadgeCheck,
@@ -39,7 +40,8 @@ export const SEARCH_TABS = {
   },
 } as const;
 
-export interface HeroFeature {
+/** Ícono + título + texto: chips del hero, confianza y pasos de "Cómo funciona". */
+export interface IconItem {
   icon: LucideIcon;
   title: string;
   text: string;
@@ -63,7 +65,7 @@ export const HERO = {
     { icon: BadgeCheck, title: "Cuentas verificadas", text: "Validamos la identidad" },
     { icon: Wallet, title: "Precios claros", text: "Ves el total antes" },
     { icon: MapPin, title: "Soporte local", text: "Estamos en Ayacucho" },
-  ] satisfies HeroFeature[],
+  ] satisfies IconItem[],
   image: {
     src: "/images/hero-1.webp",
     alt: "Mujer sosteniendo un rotomartillo en un taller",
@@ -75,35 +77,37 @@ export const SEARCH_SECTION = {
   districtsNote: `Distritos iniciales: ${DISTRICTS.join(", ")}.`,
 } as const;
 
-export interface TrustItem {
-  icon: LucideIcon;
-  title: string;
-  text: string;
-}
-
 // La verificación es un filtro, no una garantía (docs/05).
-export const TRUST_ITEMS: TrustItem[] = [
-  {
-    icon: BadgeCheck,
-    title: "Verificación de identidad",
-    text: "Pedimos verificar la identidad con DNI antes de habilitar ciertas acciones. Es un filtro para reducir riesgos, no una garantía absoluta.",
-  },
-  {
-    icon: Scale,
-    title: "Intermediarios, no empleadores",
-    text: "Qatu conecta a las partes. Los técnicos son independientes y las reglas de cancelación y disputas se muestran antes de confirmar.",
-  },
-  {
-    icon: Lock,
-    title: "Garantía con registro y evidencias",
-    text: "En los alquileres, el depósito y el estado de la herramienta quedan registrados con fotos y checklist, y Qatu media si hay una disputa.",
-  },
-  {
-    icon: Wallet,
-    title: "Precios claros en soles (S/)",
-    text: "Ves el total desglosado (servicio, tarifa, delivery y garantía) antes de confirmar. Sin cargos ocultos.",
-  },
-];
+export const TRUST = {
+  intro: {
+    eyebrow: "Confianza",
+    title: "Reglas claras desde el primer día",
+    description: "Así cuidamos cada alquiler y cada servicio en Qatu.",
+  } satisfies SectionIntro,
+  note: "La verificación es un filtro para reducir riesgos, no una garantía absoluta.",
+  items: [
+    {
+      icon: BadgeCheck,
+      title: "Verificación de identidad",
+      text: "Pedimos verificar la identidad con DNI antes de habilitar ciertas acciones.",
+    },
+    {
+      icon: Scale,
+      title: "Intermediarios, no empleadores",
+      text: "Qatu conecta a las partes. Los técnicos son independientes y las reglas de cancelación y disputas se muestran antes de confirmar.",
+    },
+    {
+      icon: Lock,
+      title: "Garantía con registro y evidencias",
+      text: "En los alquileres, el depósito y el estado de la herramienta quedan registrados con fotos y checklist, y Qatu media si hay una disputa.",
+    },
+    {
+      icon: Wallet,
+      title: "Precios claros en soles (S/)",
+      text: "Ves el total desglosado (servicio, tarifa, delivery y garantía) antes de confirmar. Sin cargos ocultos.",
+    },
+  ] satisfies IconItem[],
+} as const;
 
 export interface SectionIntro {
   eyebrow: string;
@@ -199,13 +203,6 @@ export const TRADE_SECTION: CategorySectionData = {
   ],
 };
 
-
-export interface Step {
-  icon: LucideIcon;
-  title: string;
-  text: string;
-}
-
 // Franja "Cómo funciona" (design.md, sección 4). El delivery es opcional: "Recoge o recibe" (docs/02).
 export const HOW_IT_WORKS = {
   title: "¿Cómo funciona Qatu?",
@@ -214,23 +211,18 @@ export const HOW_IT_WORKS = {
     { icon: CalendarDays, title: "Reserva", text: "Elige fechas y confirma con el total a la vista." },
     { icon: Handshake, title: "Recoge o recibe", text: "Coordina el recojo, el delivery o la visita." },
     { icon: CircleCheck, title: "Usa y devuelve", text: "La entrega y la devolución quedan registradas." },
-  ] satisfies Step[],
+  ] satisfies IconItem[],
 } as const;
 
 export const OFFER = {
-  heading:
-    "Saca provecho a tus herramientas o encuentra clientes para tu oficio.",
+  eyebrow: "Ofrece en Qatu",
+  heading: "Saca provecho a tus herramientas o encuentra clientes para tu oficio.",
   points: [
-    {
-      lead: "Tienes herramientas guardadas:",
-      text: "publícalas para alquiler y decide tus precios, tu garantía y tu disponibilidad.",
-    },
-    {
-      lead: "Eres técnico o maestro de obra:",
-      text: "muestra tu experiencia, tus paquetes de servicio y recibe solicitudes de vecinos de Huamanga.",
-    },
+    { lead: "Tienes herramientas guardadas:", text: "publícalas y decide tus precios, tu garantía y tu disponibilidad." },
+    { lead: "Eres técnico o maestro de obra:", text: "muestra tu experiencia y recibe solicitudes de vecinos de Huamanga." },
   ],
-  cta: "Comenzar a ofrecer",
+  primaryCta: { label: "Publicar herramienta", href: ROUTES.signin } satisfies CallToAction,
+  secondaryCta: { label: "Ofrecer mi oficio", href: ROUTES.signin } satisfies CallToAction,
 } as const;
 
 export interface FaqItem {
@@ -239,6 +231,12 @@ export interface FaqItem {
 }
 
 // Las cifras de comisión están por validar en piloto (docs/01): no se publican aquí.
+export const FAQ_INTRO: SectionIntro = {
+  eyebrow: "Ayuda",
+  title: "Preguntas frecuentes",
+  description: "Lo que más nos preguntan sobre alquilar y contratar en Qatu.",
+};
+
 export const FAQ: FaqItem[] = [
   {
     question: "¿Qué es Qatu y en qué ciudades funciona?",

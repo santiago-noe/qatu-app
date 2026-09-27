@@ -26,14 +26,14 @@ export function SearchPending({ tab, q, zone, from, to, category }: SearchPendin
   return (
     <section className="mx-auto flex min-h-[60vh] max-w-xl flex-col items-center justify-center gap-4 px-4 py-16 text-center">
       <h1 className="text-3xl font-extrabold">La búsqueda llega pronto</h1>
-      <p className="text-on-surface-variant">
+      <p className="text-ink-2">
         Estamos preparando el piloto en Huamanga. Esto es lo que querías buscar:
       </p>
       <ul className="flex flex-wrap justify-center gap-2">
         {summary.map((item) => (
           <li
             key={item}
-            className="rounded-full bg-surface-container px-3 py-1 text-sm font-semibold"
+            className="rounded-full bg-bg-soft px-3 py-1 text-sm font-semibold"
           >
             {item}
           </li>

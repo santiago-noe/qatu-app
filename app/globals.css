@@ -45,21 +45,12 @@
   --color-input: var(--color-line);
   --color-ring: var(--color-brand);
 
-  /* Alias de secciones aún no migradas: se eliminan cuando se rehagan */
+  /* Alias que aún usa el pie de página: se eliminan al rehacerlo */
   --color-surface: var(--color-bg);
-  --color-surface-low: var(--color-bg-soft);
-  --color-surface-container: var(--color-bg-soft);
-  --color-surface-lowest: var(--color-bg);
-  --color-bg-raised: var(--color-bg-soft);
   --color-on-surface: var(--color-ink);
-  --color-on-surface-variant: var(--color-ink-2);
-  --color-outline: var(--color-ink-3);
   --color-inverse-surface: var(--color-footer);
   --color-inverse-on-surface: var(--color-footer-ink);
-  --color-primary-container: #374151;
   --color-primary-fixed: var(--color-brand-soft);
-  --color-on-primary: #ffffff;
-  --color-tertiary-fixed: var(--color-brand);
 }
 
 @layer base {
