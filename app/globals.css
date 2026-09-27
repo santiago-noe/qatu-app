@@ -1,50 +1,73 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 
+/* Dirección visual "Ficha técnica" (qatu-docs/prompts/features/000-landing-page.design.md) */
 @theme {
-  --font-sans: var(--font-jakarta), ui-sans-serif, system-ui, sans-serif;
+  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, monospace;
 
-  /* Fondo blanco y superficies neutras cálidas; un solo acento terracota */
-  --color-background: #ffffff;
+  /* Gris de estudio continuo con las fotos */
+  --color-bg: #efefee;
+  --color-bg-raised: #f6f6f5;
   --color-surface: #ffffff;
-  --color-surface-low: #f7f5f3;
-  --color-surface-container: #f0ece8;
-  --color-surface-high: #e9e4df;
-  --color-surface-highest: #e2dcd6;
-  --color-surface-lowest: #ffffff;
-  --color-on-surface: #222222;
-  --color-on-surface-variant: #5e5852;
-  --color-outline: #b8b0a8;
-  --color-inverse-surface: #222222;
-  --color-inverse-on-surface: #f7f5f3;
 
-  /* Acento (contraste AA con texto blanco); el hover lo oscurece */
-  --color-primary: #c2512b;
-  --color-primary-container: #a13f1c;
-  --color-primary-fixed: #fdebe3;
-  --color-on-primary: #ffffff;
+  --color-ink: #111111;
+  --color-ink-2: #55524e;
+  /* Ajustado de #7a7671 a #6b6761 para cumplir AA en etiquetas pequeñas */
+  --color-ink-3: #6b6761;
+  --color-line: #d9d7d3;
 
-  --color-secondary: #6b5f57;
-  --color-secondary-container: #efe7e1;
-  --color-secondary-fixed: #f3ece6;
+  /* Un solo acento naranja: botón principal, foco y estado activo (< 5 % de la superficie) */
+  --color-accent: #c2410c;
+  --color-accent-hover: #9a3412;
+  --color-accent-bright: #ea580c;
+  --color-ok: #15803d;
 
-  /* Verde solo para éxito y verificación */
-  --color-tertiary: #006b2c;
-  --color-tertiary-container: #00873a;
-  --color-tertiary-fixed: #7ffc97;
+  --color-footer: #0b0b0b;
+  --color-footer-ink: #e7e5e2;
+  --color-footer-ink-2: #a19d97;
+
+  --radius-control: 8px;
+  --radius-card: 16px;
+  --radius-media: 24px;
+
+  --shadow-panel: 0 1px 2px rgb(0 0 0 / 0.04), 0 12px 32px -12px rgb(0 0 0 / 0.12);
 
   /* Tokens semánticos que esperan los componentes shadcn/ui */
-  --color-foreground: var(--color-on-surface);
-  --color-primary-foreground: var(--color-on-primary);
-  --color-secondary-foreground: var(--color-on-surface);
-  --color-muted: var(--color-surface-container);
-  --color-muted-foreground: var(--color-on-surface-variant);
-  --color-accent: var(--color-surface-container);
-  --color-accent-foreground: var(--color-on-surface);
-  --color-destructive: #ba1a1a;
-  --color-border: #e3ddd7;
-  --color-input: #c9c0b8;
-  --color-ring: var(--color-primary);
+  --color-background: var(--color-bg);
+  --color-foreground: var(--color-ink);
+  --color-primary: var(--color-accent);
+  --color-primary-foreground: #ffffff;
+  --color-secondary: var(--color-surface);
+  --color-secondary-foreground: var(--color-ink);
+  --color-muted: var(--color-bg-raised);
+  --color-muted-foreground: var(--color-ink-2);
+  --color-popover: var(--color-surface);
+  --color-popover-foreground: var(--color-ink);
+  --color-destructive: #b91c1c;
+  --color-border: var(--color-line);
+  --color-input: var(--color-line);
+  --color-ring: var(--color-accent);
+
+  /* Alias del sistema anterior: se eliminan cuando todas las secciones estén migradas */
+  --color-surface-low: var(--color-bg-raised);
+  --color-surface-container: var(--color-bg-raised);
+  --color-surface-high: var(--color-line);
+  --color-surface-highest: var(--color-line);
+  --color-surface-lowest: var(--color-surface);
+  --color-on-surface: var(--color-ink);
+  --color-on-surface-variant: var(--color-ink-2);
+  --color-outline: var(--color-ink-3);
+  --color-inverse-surface: var(--color-footer);
+  --color-inverse-on-surface: var(--color-footer-ink);
+  --color-primary-container: var(--color-accent-hover);
+  --color-primary-fixed: var(--color-bg-raised);
+  --color-on-primary: #ffffff;
+  --color-secondary-container: var(--color-bg-raised);
+  --color-secondary-fixed: var(--color-bg-raised);
+  --color-tertiary: var(--color-ok);
+  --color-tertiary-container: var(--color-ok);
+  --color-tertiary-fixed: #86efac;
 }
 
 @layer base {
@@ -53,10 +76,14 @@
     scroll-padding-top: 6rem;
   }
   body {
-    @apply bg-background text-on-surface antialiased;
+    @apply bg-bg text-ink antialiased;
+  }
+  h1,
+  h2 {
+    @apply font-normal;
   }
   :focus-visible {
-    @apply outline-2 outline-offset-2 outline-primary;
+    @apply outline-2 outline-offset-2 outline-accent;
   }
 }
 
@@ -65,6 +92,15 @@
   &::-webkit-scrollbar {
     display: none;
   }
+}
+
+/* Etiqueta técnica en monoespaciada: DISTRITO, PASO 01, > VERIFICADO */
+@utility label-mono {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
 }
 
 @media (prefers-reduced-motion: reduce) {

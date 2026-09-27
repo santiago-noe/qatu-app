@@ -5,7 +5,7 @@ export function Trust() {
     <section className="bg-surface-lowest py-14" aria-labelledby="confianza">
       <div className="mx-auto max-w-[1200px] px-4 md:px-6">
         <div className="mx-auto max-w-2xl space-y-2 pb-8 text-center">
-          <p className="text-xs font-bold uppercase tracking-widest text-secondary">
+          <p className="text-xs font-bold uppercase tracking-widest text-ink-2">
             Transparencia desde el día uno
           </p>
           <h2 id="confianza" className="text-2xl font-extrabold md:text-3xl">

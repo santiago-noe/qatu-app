@@ -97,7 +97,7 @@ export function Categories() {
           title="Oficios para tu hogar o negocio"
           description="Contrata con precio fijo o pide cotizaciones a varios técnicos."
           tab="hire"
-          tone="bg-secondary-container text-secondary"
+          tone="bg-bg-raised text-ink"
           items={TRADE_CATEGORIES}
         />
       </div>
