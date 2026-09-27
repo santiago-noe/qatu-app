@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { FOOTER_LINKS, CITY } from "@/features/public/landing/lib/content";
+import { CITY, LEGAL_LINKS, NAV_LINKS } from "@/lib/site";
 
 export function SiteFooter() {
   return (
@@ -18,7 +18,7 @@ export function SiteFooter() {
             Qatu
           </p>
           <ul className="space-y-2 text-sm">
-            {FOOTER_LINKS.product.map((l) => (
+            {NAV_LINKS.map((l) => (
               <li key={l.href}>
                 <a href={l.href} className="hover:underline">
                   {l.label}
@@ -33,7 +33,7 @@ export function SiteFooter() {
             Legal
           </p>
           <ul className="space-y-2 text-sm">
-            {FOOTER_LINKS.legal.map((l) => (
+            {LEGAL_LINKS.map((l) => (
               <li key={l.href}>
                 <Link href={l.href} className="hover:underline">
                   {l.label}
