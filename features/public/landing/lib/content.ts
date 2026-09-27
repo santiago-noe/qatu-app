@@ -1,6 +1,7 @@
 import type { LucideIcon } from "lucide-react";
 import {
   BadgeCheck,
+  Camera,
   Droplets,
   Hammer,
   HardHat,
@@ -11,6 +12,7 @@ import {
   Scale,
   Scissors,
   Shovel,
+  ShieldCheck,
   Sparkles,
   Wallet,
   Wrench,
@@ -60,12 +62,31 @@ export const SEARCH_TABS = {
   },
 } as const;
 
+export interface HeroFeature {
+  icon: LucideIcon;
+  label: string;
+}
+
+// Hero único (design.md): solo promete lo que existe en el piloto (docs/05).
 export const HERO = {
-  badge: "Piloto en Huamanga, Ayacucho",
+  title: ["Herramientas", "y servicios"],
+  titleMuted: "a tu alcance",
   subtitle:
-    "Conectamos a vecinos y técnicos de Huamanga. Alquila en vez de comprar, saca provecho a tus herramientas ociosas y encuentra mano de obra cerca de ti.",
-  ctaTools: "Ver herramientas",
-  ctaServices: "Buscar técnicos",
+    "Encuentra, alquila o contrata lo que necesitas en Huamanga, de forma segura, fácil y desde un solo lugar.",
+  features: [
+    { icon: ShieldCheck, label: "Garantía documentada" },
+    { icon: Camera, label: "Evidencia fotográfica" },
+    { icon: BadgeCheck, label: "Cuentas verificadas" },
+  ] satisfies HeroFeature[],
+  cta: { label: "Explora ahora", href: "#buscar" },
+  image: {
+    src: "/images/hero-1.webp",
+    alt: "Mujer sosteniendo un rotomartillo en un taller",
+  },
+} as const;
+
+export const SEARCH_SECTION = {
+  title: "¿Qué necesitas hoy?",
   districtsNote: `Distritos iniciales: ${DISTRICTS.join(", ")}.`,
 } as const;
 
