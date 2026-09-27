@@ -14,10 +14,11 @@ interface SubmitOptions {
  * Estado común de los formularios de acceso: errores por campo, aviso general y envío.
  * submit valida en el navegador, llama al BFF y reparte los errores de qatu-api en sus campos.
  */
-export function useAuthForm<F extends string>(fields: readonly F[]) {
+export function useAuthForm<F extends string>(fields: readonly F[], initialAlert?: string) {
   const formRef = useRef<HTMLFormElement>(null);
   const [errors, setErrors] = useState<FieldErrors<F>>({});
-  const [alert, setAlert] = useState<string>();
+  // initialAlert: error con el que se vuelve de Google (?error=).
+  const [alert, setAlert] = useState(initialAlert);
   const [pending, setPending] = useState(false);
 
   // Tras un error, el foco va al primer campo inválido (lectores de pantalla y teclado).
@@ -42,5 +43,5 @@ export function useAuthForm<F extends string>(fields: readonly F[]) {
     return undefined;
   }
 
-  return { formRef, errors, alert, setAlert, pending, submit };
+  return { formRef, errors, setErrors, alert, setAlert, pending, submit };
 }
