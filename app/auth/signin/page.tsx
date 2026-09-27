@@ -4,7 +4,9 @@ import { NEXT_PARAM } from "@/lib/session";
 
 export const metadata: Metadata = { title: "Iniciar sesión" };
 
+const param = (value: string | string[] | undefined) => (typeof value === "string" ? value : undefined);
+
 export default async function Page({ searchParams }: PageProps<"/auth/signin">) {
-  const next = (await searchParams)[NEXT_PARAM];
-  return <SigninView next={typeof next === "string" ? next : undefined} />;
+  const params = await searchParams;
+  return <SigninView next={param(params[NEXT_PARAM])} error={param(params.error)} />;
 }
