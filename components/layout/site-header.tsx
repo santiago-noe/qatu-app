@@ -6,6 +6,7 @@ import { Menu, Search, X } from "lucide-react";
 import { HEADER_LINKS, NAV_LINKS } from "@/features/public/landing/lib/content";
 import { ROUTES } from "@/lib/session";
 import { AnnouncementBar } from "./announcement-bar";
+import { Logo } from "./logo";
 
 export function SiteHeader() {
   const [open, setOpen] = useState(false);
@@ -26,9 +27,7 @@ export function SiteHeader() {
     <header className="fixed inset-x-0 top-0 z-50">
       <div className="border-b border-line bg-bg">
         <div className="mx-auto flex h-16 max-w-[1200px] items-center gap-6 px-4 md:px-12">
-          <Link href={ROUTES.home} className="text-2xl font-semibold tracking-tight text-ink" aria-label="Qatu, inicio">
-            Qatu
-          </Link>
+          <Logo priority />
 
           <nav aria-label="Principal" className="hidden items-center gap-6 lg:flex">
             {HEADER_LINKS.map((l) => (
