@@ -11,6 +11,14 @@ const API = new URL(process.env.API_BASE_URL ?? "http://localhost:8080");
 const isWs = (url = "") =>
   url === WS_PATH || url.startsWith(WS_PATH + "?") || url.startsWith(WS_PATH + "/");
 
+// Agrega la IP de la conexión al final de X-Forwarded-For, como todo proxy. El BFF toma
+// esa última entrada como IP real del usuario; las anteriores las escribe el cliente.
+const withForwardedFor = (req) => {
+  const prior = req.headers["x-forwarded-for"];
+  const ip = req.socket.remoteAddress ?? "";
+  return { ...req.headers, "x-forwarded-for": prior ? prior + ", " + ip : ip };
+};
+
 const server = http.createServer((req, res) => {
   const proxy = http.request(
     {
@@ -18,7 +26,7 @@ const server = http.createServer((req, res) => {
       port: NEXT_PORT,
       path: req.url,
       method: req.method,
-      headers: req.headers,
+      headers: withForwardedFor(req),
     },
     (up) => {
       res.writeHead(up.statusCode ?? 502, up.headers);
