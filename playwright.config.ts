@@ -25,5 +25,7 @@ export default defineConfig({
     url: `http://localhost:${PORT}`,
     reuseExistingServer: !process.env.CI,
     timeout: 240_000,
+    // Carpeta aparte de .next para no romper un `bun run dev` en curso (next.config.ts).
+    env: { NEXT_DIST_DIR: ".next-e2e" },
   },
 });
