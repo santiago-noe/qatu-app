@@ -1,4 +1,5 @@
 import type { LucideIcon } from "lucide-react";
+import type { SearchTab } from "./search";
 import {
   BadgeCheck,
   Hammer,
@@ -111,20 +112,38 @@ export interface ImageAsset {
   alt: string;
 }
 
-export interface ToolCategory {
+export interface CategoryItem {
   name: string;
   description: string;
-  image: ImageAsset;
+  /** Foto de la tarjeta; sin foto se muestra el ícono sobre fondo oscuro. */
+  image?: ImageAsset;
+  icon?: LucideIcon;
 }
 
-// Sin precios, cantidades ni "más alquiladas" (design.md, sección 2).
-export const TOOL_CATEGORIES_INTRO: SectionIntro = {
-  eyebrow: "Categorías",
-  title: "Encuentra lo que necesitas",
-  description: "Las categorías con las que empezamos el piloto en Huamanga.",
-};
+export interface CategorySectionData {
+  id: string;
+  tab: SearchTab;
+  intro: SectionIntro;
+  /** Texto del botón de cada tarjeta. */
+  cta: string;
+  /** Fondo de la sección. */
+  tone: "white" | "soft";
+  items: CategoryItem[];
+}
 
-export const TOOL_CATEGORIES: ToolCategory[] = [
+// Mosaico: se muestran las 5 primeras (la primera destacada); el resto se alcanza con "Ver todos".
+// Sin precios, cantidades ni "más alquiladas" (design.md, sección 2).
+export const TOOL_SECTION: CategorySectionData = {
+  id: "herramientas",
+  tab: "rent",
+  intro: {
+    eyebrow: "Categorías",
+    title: "Encuentra lo que necesitas",
+    description: "Las categorías con las que empezamos el piloto en Huamanga.",
+  },
+  cta: "Ver equipos",
+  tone: "white",
+  items: [] = [
   {
     name: "Construcción",
     description: "Rotomartillos, mezcladoras y más equipos para tu obra.",
@@ -150,56 +169,32 @@ export const TOOL_CATEGORIES: ToolCategory[] = [
     description: "Compresoras, pistolas y escaleras.",
     image: { src: "/images/categories/pintura.webp", alt: "Rodillo, brocha, cinta y balde de pintura" },
   },
-];
+],
+};
 
-export interface TradeCategory {
-  icon: LucideIcon;
-  title: string;
-  text: string;
-}
+// Fotos de oficios pendientes: mientras tanto, cada tarjeta muestra su ícono.
+export const TRADE_SECTION: CategorySectionData = {
+  id: "servicios",
+  tab: "hire",
+  intro: {
+    eyebrow: "Servicios",
+    title: "Oficios para tu hogar o negocio",
+    description: "Contrata con precio fijo o pide cotizaciones a varios técnicos.",
+  },
+  cta: "Ver técnicos",
+  tone: "soft",
+  items: [
+    { icon: Wrench, name: "Gasfitería", description: "Fugas, griferías, termas y mantenimiento de tanques." },
+    { icon: Zap, name: "Electricidad", description: "Cortocircuitos, cableado, tableros e iluminación." },
+    { icon: KeyRound, name: "Cerrajería", description: "Apertura de cerraduras, cambio de cilindros y cerrojos." },
+    { icon: PaintRoller, name: "Pintura", description: "Interiores, fachadas, empastado y sellado de humedad." },
+    { icon: Hammer, name: "Albañilería menor", description: "Resanes, tarrajeo, enchapes y pequeñas refacciones." },
+    { icon: Scissors, name: "Jardinería", description: "Poda, limpieza y mantenimiento de áreas verdes." },
+    { icon: Ruler, name: "Carpintería", description: "Ajuste de puertas, reparación de muebles y armado." },
+    { icon: Sparkles, name: "Limpieza", description: "Limpieza de hogares, oficinas y post obra." },
+  ],
+};
 
-export const TRADE_CATEGORIES: TradeCategory[] = [
-  {
-    icon: Wrench,
-    title: "Gasfitería",
-    text: "Fugas, griferías, termas y mantenimiento de tanques.",
-  },
-  {
-    icon: Zap,
-    title: "Electricidad",
-    text: "Cortocircuitos, cableado, tableros e iluminación.",
-  },
-  {
-    icon: KeyRound,
-    title: "Cerrajería",
-    text: "Apertura de cerraduras, cambio de cilindros y cerrojos.",
-  },
-  {
-    icon: PaintRoller,
-    title: "Pintura",
-    text: "Interiores, fachadas, empastado y sellado de humedad.",
-  },
-  {
-    icon: Hammer,
-    title: "Albañilería menor",
-    text: "Resanes, tarrajeo, enchapes y pequeñas refacciones.",
-  },
-  {
-    icon: Scissors,
-    title: "Jardinería",
-    text: "Poda, limpieza y mantenimiento de áreas verdes.",
-  },
-  {
-    icon: Ruler,
-    title: "Carpintería",
-    text: "Ajuste de puertas, reparación de muebles y armado.",
-  },
-  {
-    icon: Sparkles,
-    title: "Limpieza",
-    text: "Limpieza de hogares, oficinas y post obra.",
-  },
-];
 
 export interface Step {
   title: string;
