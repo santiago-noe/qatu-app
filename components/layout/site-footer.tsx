@@ -51,7 +51,7 @@ export function SiteFooter() {
           <p className="text-sm font-semibold text-white">Crea tu cuenta gratis</p>
           <p className="text-sm text-footer-ink">Alquila, contrata u ofrece en Huamanga desde un solo lugar.</p>
           <Button asChild className="h-11 rounded-[var(--radius-control)] bg-brand px-5 text-ink hover:bg-brand/90">
-            <Link href={ROUTES.signin}>
+            <Link href={ROUTES.signup}>
               Registrarme
               <ArrowRight className="size-4" strokeWidth={2} aria-hidden />
             </Link>
