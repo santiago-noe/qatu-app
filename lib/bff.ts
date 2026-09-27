@@ -24,14 +24,14 @@ export function errorResponse(status: number, error: string, message: string) {
   return NextResponse.json<ApiError>({ error, message }, { status });
 }
 
-const backendUnreachable = () =>
+export const backendUnreachable = () =>
   errorResponse(502, "servicio_no_disponible", "No pudimos conectar con Qatu. Inténtalo en unos minutos.");
 
 // Solo JSON: un formulario de otro sitio no puede enviar este tipo sin permiso CORS.
-const isJson = (req: NextRequest) => req.headers.get("content-type")?.startsWith("application/json") ?? false;
+export const isJson = (req: NextRequest) => req.headers.get("content-type")?.startsWith("application/json") ?? false;
 
 /** Devuelve el error de qatu-api tal cual (código y mensaje en español) con su Retry-After. */
-function passError(res: Response, body: unknown) {
+export function passError(res: Response, body: unknown) {
   if (!body || typeof body !== "object" || !("error" in body)) return backendUnreachable();
   const out = NextResponse.json(body, { status: res.status });
   const retryAfter = res.headers.get("retry-after");
