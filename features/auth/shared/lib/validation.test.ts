@@ -2,6 +2,7 @@ import { describe, expect, test } from "bun:test";
 import {
   hasErrors,
   PASSWORD_MIN,
+  validateConsents,
   validateCurrentPassword,
   validateEmail,
   validateName,
@@ -39,6 +40,12 @@ test("validateName recorta espacios y limita el largo", () => {
   expect(validateName("  Ana  ")).toBeUndefined();
   expect(validateName("   ")).toBeString();
   expect(validateName("a".repeat(121))).toBeString();
+});
+
+test("validateConsents exige ambas casillas", () => {
+  expect(hasErrors(validateConsents(true, true))).toBe(false);
+  expect(validateConsents(false, true).adult_declared).toBeString();
+  expect(validateConsents(true, false).accept_legal).toBeString();
 });
 
 test("hasErrors ignora los campos sin mensaje", () => {
