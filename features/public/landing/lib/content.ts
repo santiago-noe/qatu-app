@@ -221,8 +221,8 @@ export const OFFER = {
     { lead: "Tienes herramientas guardadas:", text: "publícalas y decide tus precios, tu garantía y tu disponibilidad." },
     { lead: "Eres técnico o maestro de obra:", text: "muestra tu experiencia y recibe solicitudes de vecinos de Huamanga." },
   ],
-  primaryCta: { label: "Publicar herramienta", href: ROUTES.signin } satisfies CallToAction,
-  secondaryCta: { label: "Ofrecer mi oficio", href: ROUTES.signin } satisfies CallToAction,
+  primaryCta: { label: "Publicar herramienta", href: ROUTES.signup } satisfies CallToAction,
+  secondaryCta: { label: "Ofrecer mi oficio", href: ROUTES.signup } satisfies CallToAction,
 } as const;
 
 export interface FaqItem {
