@@ -1,68 +1,59 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 import { Menu, Search, X } from "lucide-react";
-import { HEADER_LINKS, NAV_LINKS } from "@/features/public/landing/lib/content";
+import { Button } from "@/components/ui/button";
+import { useOverlay } from "@/hooks/use-overlay";
+import { NAV_LINKS } from "@/lib/site";
 import { ROUTES } from "@/lib/session";
 import { AnnouncementBar } from "./announcement-bar";
+import { Container } from "./container";
 import { Logo } from "./logo";
+
+const HEADER_LINKS = NAV_LINKS.filter((l) => l.inHeader !== false);
 
 export function SiteHeader() {
   const [open, setOpen] = useState(false);
-
-  // El menú móvil bloquea el scroll del fondo y se cierra con Escape.
-  useEffect(() => {
-    if (!open) return;
-    const onKey = (e: KeyboardEvent) => e.key === "Escape" && setOpen(false);
-    document.body.style.overflow = "hidden";
-    window.addEventListener("keydown", onKey);
-    return () => {
-      document.body.style.overflow = "";
-      window.removeEventListener("keydown", onKey);
-    };
-  }, [open]);
+  const close = useCallback(() => setOpen(false), []);
+  useOverlay(open, close);
 
   return (
+    // Alto total: 64 px de cabecera + 32 px de aviso = pt-24 en app/(public)/layout.tsx.
     <header className="fixed inset-x-0 top-0 z-50">
       <div className="border-b border-line bg-bg">
-        <div className="mx-auto flex h-16 max-w-[1200px] items-center gap-6 px-4 md:px-12">
+        <Container size="wide" className="flex h-16 items-center gap-4 lg:gap-6">
           <Logo priority />
 
-          <nav aria-label="Principal" className="hidden items-center gap-6 lg:flex">
+          <nav aria-label="Principal" className="hidden shrink-0 items-center gap-5 lg:flex">
             {HEADER_LINKS.map((l) => (
-              <a key={l.href} href={l.href} className="text-sm text-ink hover:text-brand-text">
+              <a key={l.href} href={l.href} className="whitespace-nowrap text-[13px] font-medium text-ink hover:text-brand-text">
                 {l.label}
               </a>
             ))}
           </nav>
 
-          {/* Buscador compacto: formulario GET a /buscar, funciona sin JavaScript */}
-          <form action="/buscar" method="get" role="search" className="ml-auto hidden md:block">
-            <label className="flex h-9 w-56 items-center gap-2 rounded-[var(--radius-control)] bg-bg-soft px-3 lg:w-64">
-              <Search className="size-4 shrink-0 text-ink-3" strokeWidth={1.5} aria-hidden />
+          {/* Buscador: formulario GET a /buscar, funciona sin JavaScript; ocupa el espacio libre */}
+          <form action="/buscar" method="get" role="search" className="hidden min-w-0 flex-1 md:block">
+            <label className="mx-auto flex h-9 w-full max-w-2xl items-center gap-2 rounded-[var(--radius-control)] border border-ink-3/40 bg-bg px-4 shadow-sm transition-colors focus-within:border-ink focus-within:ring-1 focus-within:ring-ink">
+              <Search className="size-4 shrink-0 text-ink-2" strokeWidth={1.5} aria-hidden />
               <span className="sr-only">Buscar en Qatu</span>
               <input
                 type="search"
                 name="q"
-                placeholder="¿Qué necesitas?"
-                className="w-full bg-transparent text-sm text-ink outline-none placeholder:text-ink-3"
+                placeholder="Busca herramientas o servicios en Huamanga…"
+                className="w-full min-w-0 bg-transparent text-sm text-ink outline-none placeholder:text-ink-2 focus-visible:shadow-none focus-visible:outline-none"
               />
             </label>
           </form>
 
-          <div className="ml-auto flex items-center gap-1 md:ml-0">
-            <p className="hidden text-sm text-ink sm:block">
-              <Link href={ROUTES.signin} className="hover:text-brand-text">
-                Iniciar sesión
-              </Link>
-              <span className="px-1 text-ink-3" aria-hidden>
-                /
-              </span>
-              <Link href={ROUTES.signin} className="hover:text-brand-text">
-                Registrarme
-              </Link>
-            </p>
+          <div className="ml-auto flex shrink-0 items-center gap-2 md:ml-0">
+            <Link href={ROUTES.signin} className="hidden whitespace-nowrap px-2 text-[13px] font-medium text-ink hover:text-brand-text sm:inline">
+              Iniciar sesión
+            </Link>
+            <Button asChild className="hidden h-10 rounded-[var(--radius-control)] px-5 text-[13px] sm:inline-flex">
+              <Link href={ROUTES.signin}>Registrarme</Link>
+            </Button>
             <a
               href="/#buscar"
               aria-label="Buscar"
@@ -81,7 +72,7 @@ export function SiteHeader() {
               {open ? <X className="size-6" strokeWidth={1.5} /> : <Menu className="size-6" strokeWidth={1.5} />}
             </button>
           </div>
-        </div>
+        </Container>
       </div>
 
       <AnnouncementBar />
@@ -95,29 +86,19 @@ export function SiteHeader() {
           <ul className="divide-y divide-line border-y border-line">
             {NAV_LINKS.map((l) => (
               <li key={l.href}>
-                <a
-                  href={`/${l.href}`}
-                  onClick={() => setOpen(false)}
-                  className="block py-4 text-lg text-ink"
-                >
+                <a href={l.href} onClick={close} className="block py-4 text-lg font-medium text-ink">
                   {l.label}
                 </a>
               </li>
             ))}
           </ul>
           <div className="mt-6 flex flex-col gap-3">
-            <Link
-              href={ROUTES.signin}
-              className="inline-flex h-12 items-center justify-center rounded-[var(--radius-control)] bg-ink text-sm font-medium text-white"
-            >
-              Registrarme
-            </Link>
-            <Link
-              href={ROUTES.signin}
-              className="inline-flex h-12 items-center justify-center rounded-[var(--radius-control)] border border-ink text-sm font-medium text-ink"
-            >
-              Iniciar sesión
-            </Link>
+            <Button asChild className="h-12 rounded-[var(--radius-control)]">
+              <Link href={ROUTES.signin}>Registrarme</Link>
+            </Button>
+            <Button asChild variant="outline" className="h-12 rounded-[var(--radius-control)]">
+              <Link href={ROUTES.signin}>Iniciar sesión</Link>
+            </Button>
           </div>
         </nav>
       )}
