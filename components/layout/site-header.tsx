@@ -4,8 +4,10 @@ import Link from "next/link";
 import { useCallback, useState } from "react";
 import { Menu, Search, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useHideOnScroll } from "@/hooks/use-hide-on-scroll";
 import { useOverlay } from "@/hooks/use-overlay";
 import { NAV_LINKS } from "@/lib/site";
+import { cn } from "@/lib/utils";
 import { ROUTES } from "@/lib/session";
 import { AnnouncementBar } from "./announcement-bar";
 import { Container } from "./container";
@@ -17,10 +19,23 @@ export function SiteHeader() {
   const [open, setOpen] = useState(false);
   const close = useCallback(() => setOpen(false), []);
   useOverlay(open, close);
+  const [focusWithin, setFocusWithin] = useState(false);
+  // Se oculta al bajar y reaparece al subir; queda visible con el menú abierto o con el foco dentro (teclado).
+  const hidden = useHideOnScroll({ enabled: !open && !focusWithin });
 
   return (
     // Alto total: 64 px de cabecera + 32 px de aviso = pt-24 en app/(public)/layout.tsx.
-    <header className="fixed inset-x-0 top-0 z-50">
+    <header
+      className={cn(
+        "fixed inset-x-0 top-0 z-50 transition-transform duration-300 ease-out motion-reduce:transition-none",
+        hidden && "-translate-y-full",
+      )}
+      // Solo el foco de teclado o de escritura la mantiene visible; un clic en un enlace no.
+      onFocus={(e) => setFocusWithin((e.target as HTMLElement).matches(":focus-visible"))}
+      onBlur={(e) => {
+        if (!e.currentTarget.contains(e.relatedTarget as Node | null)) setFocusWithin(false);
+      }}
+    >
       <div className="border-b border-line bg-bg">
         <Container size="wide" className="flex h-16 items-center gap-4 lg:gap-6">
           <Logo priority />
