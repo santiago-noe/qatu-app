@@ -1,9 +1,10 @@
 import { ROUTES } from "@/lib/session";
 import { AuthCard } from "@/features/auth/shared/components/auth-card";
 import { TextLink } from "@/features/auth/shared/components/text-link";
+import { authErrorMessage } from "@/features/auth/shared/lib/auth-errors";
 import { SignupForm } from "./signup-form";
 
-export function SignupView() {
+export function SignupView({ error }: { error?: string }) {
   return (
     <AuthCard
       title="Crea tu cuenta"
@@ -14,7 +15,7 @@ export function SignupView() {
         </>
       }
     >
-      <SignupForm />
+      <SignupForm initialAlert={authErrorMessage(error)} />
     </AuthCard>
   );
 }
