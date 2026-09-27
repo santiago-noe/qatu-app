@@ -29,6 +29,14 @@ export function validateCurrentPassword(value: string): string | undefined {
   if (!value) return "Escribe tu contraseña.";
 }
 
+/** Casillas obligatorias para crear una cuenta (con correo o con Google). */
+export function validateConsents(adultDeclared: boolean, acceptLegal: boolean) {
+  return {
+    adult_declared: adultDeclared ? undefined : "Debes ser mayor de 18 años para crear una cuenta.",
+    accept_legal: acceptLegal ? undefined : "Acepta los términos y la política de privacidad para continuar.",
+  };
+}
+
 export function validateName(value: string): string | undefined {
   const name = value.trim();
   if (!name) return "Escribe tu nombre.";
