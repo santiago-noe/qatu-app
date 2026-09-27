@@ -36,6 +36,17 @@ export const NAV_LINKS = [
   { label: "Preguntas frecuentes", href: "#preguntas-frecuentes" },
 ] as const;
 
+// Enlaces cortos de la cabecera (el menú móvil usa NAV_LINKS completo).
+export const HEADER_LINKS = [
+  { label: "Alquilar", href: "/#herramientas" },
+  { label: "Contratar", href: "/#servicios" },
+  { label: "Cómo funciona", href: "/#como-funciona" },
+  { label: "Ofrece en Qatu", href: "/#ofrece-en-qatu" },
+] as const;
+
+// Barra negra de aviso: solo información real, nunca promociones (design.md, sección 2).
+export const ANNOUNCEMENT = `Piloto en ${PILOT_AREA}, ${CITY} · Registrarte es gratis`;
+
 export const SEARCH_TABS = {
   rent: {
     label: "Alquilar herramientas",

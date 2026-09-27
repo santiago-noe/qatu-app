@@ -87,14 +87,6 @@
   color: var(--color-ink-3);
 }
 
-/* Temporal: la cabecera actual aún la usa; se elimina en el paso 2 */
-@utility label-mono {
-  font-size: 0.75rem;
-  font-weight: 500;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-}
-
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
