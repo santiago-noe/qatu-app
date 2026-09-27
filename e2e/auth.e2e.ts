@@ -32,7 +32,27 @@ test.describe("sin API", () => {
     await expect(page.getByText("Escribe tu nombre.")).toBeVisible();
     await expect(page.getByText("Escribe tu correo.")).toBeVisible();
     await expect(page.getByText("Debes ser mayor de 18 años para crear una cuenta.")).toBeVisible();
-    await expect(page.getByLabel("Nombre y apellido")).toBeFocused();
+    // Las casillas van primero: sirven tanto para el correo como para Google.
+    await expect(page.getByLabel("Declaro que soy mayor de 18 años.")).toBeFocused();
+  });
+
+  test("registrarse con Google pide antes las casillas y no sale del sitio", async ({ page }) => {
+    await page.goto("/auth/signup");
+    await page.getByRole("button", { name: "Continuar con Google" }).click();
+    await expect(page.getByText("Acepta los términos y la política de privacidad para continuar.")).toBeVisible();
+    await expect(page).toHaveURL(/\/auth\/signup$/);
+  });
+
+  test("volver de Google sin un state válido muestra un aviso", async ({ page }) => {
+    await page.goto("/api/auth/google/callback?code=robado&state=ajeno");
+    await expect(page).toHaveURL(/\/auth\/signin\?error=google_estado_invalido/);
+    await expect(page.getByRole("alert").filter({ hasText: "El acceso con Google venció" })).toBeVisible();
+  });
+
+  test("un código de error inventado en la URL no muestra su texto", async ({ page }) => {
+    await page.goto("/auth/signin?error=Llama%20al%20999%20para%20desbloquear");
+    await expect(page.getByText("999")).toHaveCount(0);
+    await expect(page.getByRole("alert").filter({ hasText: "No pudimos completar el acceso con Google" })).toBeVisible();
   });
 
   test("la contraseña se puede mostrar y ocultar", async ({ page }) => {
@@ -94,6 +114,19 @@ test.describe("con API", () => {
     await signup(page, email);
     await expect(page.getByText("el correo ya está registrado")).toBeVisible();
     await expect(page.getByLabel("Correo")).toBeFocused();
+  });
+
+  test("Continuar con Google lleva a Google con PKCE y el state", async ({ page }) => {
+    await page.goto("/auth/signin");
+    // No se sigue hasta Google: basta con ver la URL a la que el navegador intenta ir.
+    await page.route("https://accounts.google.com/**", (route) => route.fulfill({ status: 200, body: "google" }));
+    await page.getByRole("button", { name: "Continuar con Google" }).click();
+    await page.waitForURL(/accounts\.google\.com/);
+    // Requiere qatu-api con APP__GOOGLE__CLIENT_ID (sin él, el botón muestra "no disponible").
+    const url = new URL(page.url());
+    expect(url.searchParams.get("code_challenge_method")).toBe("S256");
+    expect(url.searchParams.get("state")).toBeTruthy();
+    expect(url.searchParams.get("redirect_uri")).toBe("http://localhost:3000/api/auth/google/callback");
   });
 
   test("credenciales incorrectas muestran un aviso que no revela si el correo existe", async ({ page }) => {
