@@ -1,70 +1,61 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 
-/* Dirección visual "Ficha técnica" (qatu-docs/prompts/features/000-landing-page.design.md) */
+/* Dirección visual "Catálogo" (qatu-docs/prompts/features/000-landing-page.design.md) */
 @theme {
   --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
-  --font-mono: var(--font-geist-mono), ui-monospace, monospace;
 
-  /* Gris de estudio continuo con las fotos */
-  --color-bg: #efefee;
-  --color-bg-raised: #f6f6f5;
-  --color-surface: #ffffff;
-
+  /* Blanco, negro y gris claro como base */
+  --color-bg: #ffffff;
+  --color-bg-soft: #f5f5f5;
   --color-ink: #111111;
-  --color-ink-2: #55524e;
-  /* Ajustado de #7a7671 a #6b6761 para cumplir AA en etiquetas pequeñas */
-  --color-ink-3: #6b6761;
-  --color-line: #d9d7d3;
+  --color-ink-2: #555555;
+  --color-ink-3: #6b6b6b;
+  --color-line: #e5e5e5;
 
-  /* Un solo acento naranja: botón principal, foco y estado activo (< 5 % de la superficie) */
+  /* Terracota de Qatu: estado activo, foco y detalles; el tono suave solo en círculos decorativos */
   --color-accent: #c2410c;
-  --color-accent-hover: #9a3412;
-  --color-accent-bright: #ea580c;
+  --color-accent-soft: #f6d9cc;
   --color-ok: #15803d;
 
-  --color-footer: #0b0b0b;
-  --color-footer-ink: #e7e5e2;
-  --color-footer-ink-2: #a19d97;
+  --radius-control: 4px;
+  --radius-card: 4px;
 
-  --radius-control: 8px;
-  --radius-card: 16px;
-  --radius-media: 24px;
-
-  --shadow-panel: 0 1px 2px rgb(0 0 0 / 0.04), 0 12px 32px -12px rgb(0 0 0 / 0.12);
-
-  /* Tokens semánticos que esperan los componentes shadcn/ui */
+  /* Tokens semánticos que esperan los componentes shadcn/ui: botón principal negro */
   --color-background: var(--color-bg);
   --color-foreground: var(--color-ink);
-  --color-primary: var(--color-accent);
+  --color-primary: var(--color-ink);
   --color-primary-foreground: #ffffff;
-  --color-secondary: var(--color-surface);
+  --color-secondary: var(--color-bg);
   --color-secondary-foreground: var(--color-ink);
-  --color-muted: var(--color-bg-raised);
+  --color-muted: var(--color-bg-soft);
   --color-muted-foreground: var(--color-ink-2);
-  --color-popover: var(--color-surface);
+  --color-popover: var(--color-bg);
   --color-popover-foreground: var(--color-ink);
   --color-destructive: #b91c1c;
   --color-border: var(--color-line);
   --color-input: var(--color-line);
   --color-ring: var(--color-accent);
 
-  /* Alias del sistema anterior: se eliminan cuando todas las secciones estén migradas */
-  --color-surface-low: var(--color-bg-raised);
-  --color-surface-container: var(--color-bg-raised);
+  /* Alias temporales de sistemas anteriores: se eliminan al terminar la migración */
+  --color-surface: var(--color-bg);
+  --color-bg-raised: var(--color-bg-soft);
+  --color-accent-hover: #9a3412;
+  --color-surface-low: var(--color-bg-soft);
+  --color-surface-container: var(--color-bg-soft);
   --color-surface-high: var(--color-line);
   --color-surface-highest: var(--color-line);
-  --color-surface-lowest: var(--color-surface);
+  --color-surface-lowest: var(--color-bg);
   --color-on-surface: var(--color-ink);
   --color-on-surface-variant: var(--color-ink-2);
   --color-outline: var(--color-ink-3);
-  --color-inverse-surface: var(--color-footer);
-  --color-inverse-on-surface: var(--color-footer-ink);
-  --color-primary-container: var(--color-accent-hover);
-  --color-primary-fixed: var(--color-bg-raised);
+  --color-inverse-surface: var(--color-ink);
+  --color-inverse-on-surface: #ffffff;
+  --color-primary-container: #2b2b2b;
+  --color-primary-fixed: var(--color-accent-soft);
   --color-on-primary: #ffffff;
-  --color-secondary-container: var(--color-bg-raised);
-  --color-secondary-fixed: var(--color-bg-raised);
+  --color-secondary-container: var(--color-bg-soft);
+  --color-secondary-fixed: var(--color-bg-soft);
   --color-tertiary: var(--color-ok);
   --color-tertiary-container: var(--color-ok);
   --color-tertiary-fixed: #86efac;
@@ -73,14 +64,10 @@
 @layer base {
   html {
     scroll-behavior: smooth;
-    scroll-padding-top: 6rem;
+    scroll-padding-top: 7rem;
   }
   body {
     @apply bg-bg text-ink antialiased;
-  }
-  h1,
-  h2 {
-    @apply font-normal;
   }
   :focus-visible {
     @apply outline-2 outline-offset-2 outline-accent;
@@ -94,9 +81,14 @@
   }
 }
 
-/* Etiqueta técnica en monoespaciada: DISTRITO, PASO 01, > VERIFICADO */
+/* Antetítulo de sección: "Explora por categoría" */
+@utility eyebrow {
+  font-size: 0.875rem;
+  color: var(--color-ink-3);
+}
+
+/* Temporal: la cabecera actual aún la usa; se elimina en el paso 2 */
 @utility label-mono {
-  font-family: var(--font-mono);
   font-size: 0.75rem;
   font-weight: 500;
   letter-spacing: 0.06em;
