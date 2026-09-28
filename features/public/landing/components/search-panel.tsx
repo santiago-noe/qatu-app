@@ -11,8 +11,9 @@ import { useOverlay } from "@/hooks/use-overlay";
 import { Button } from "@/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { DISTRICTS, SEARCH_TABS } from "../lib/content";
-import { ALL_ZONES, buildSearchUrl, toIsoDate, toSlug, validateDates, type SearchTab } from "../lib/search";
+import type { ApiZone } from "@/lib/api";
+import { SEARCH_TABS } from "../lib/content";
+import { ALL_ZONES, buildSearchUrl, toIsoDate, validateDates, type SearchTab } from "../lib/search";
 
 // El calendario solo se descarga al abrir "Cuándo".
 const DateRangeCalendar = dynamic(() => import("./date-range-calendar"), {
@@ -32,7 +33,7 @@ const ALL_ZONES_LABEL = "Todo Huamanga";
 
 const fieldLabel = "text-[11px] font-semibold uppercase tracking-[0.06em] text-ink-3";
 
-export function SearchPanel() {
+export function SearchPanel({ zones }: { zones: ApiZone[] }) {
   const router = useRouter();
   const [tab, setTab] = useState<SearchTab>("rent");
   const [q, setQ] = useState("");
@@ -46,7 +47,7 @@ export function SearchPanel() {
   const wide = useMediaQuery("(min-width: 1024px)");
 
   const current = SEARCH_TABS[tab];
-  const zoneLabel = DISTRICTS.find((d) => toSlug(d) === zone) ?? ALL_ZONES_LABEL;
+  const zoneLabel = zones.find((z) => z.slug === zone)?.name ?? ALL_ZONES_LABEL;
   const isRent = tab === "rent";
 
   function submit(e: React.FormEvent) {
@@ -112,9 +113,9 @@ export function SearchPanel() {
         </SelectTrigger>
         <SelectContent>
           <SelectItem value={ALL_ZONES}>{ALL_ZONES_LABEL}</SelectItem>
-          {DISTRICTS.map((d) => (
-            <SelectItem key={d} value={toSlug(d)}>
-              {d}
+          {zones.map((z) => (
+            <SelectItem key={z.slug} value={z.slug}>
+              {z.name}
             </SelectItem>
           ))}
         </SelectContent>
