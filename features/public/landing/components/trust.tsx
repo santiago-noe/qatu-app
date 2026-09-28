@@ -2,7 +2,7 @@ import { Info } from "lucide-react";
 import { Container } from "@/components/layout/container";
 import { SectionHeading } from "@/components/layout/section-heading";
 import { TRUST } from "../lib/content";
-import { IconBadge } from "./icon-badge";
+import { IconBadge } from "@/components/layout/icon-badge";
 
 export function Trust() {
   return (

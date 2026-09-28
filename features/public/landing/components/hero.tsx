@@ -3,7 +3,7 @@ import { ArrowRight, Play } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Container } from "@/components/layout/container";
 import { HERO } from "../lib/content";
-import { IconBadge } from "./icon-badge";
+import { IconBadge } from "@/components/layout/icon-badge";
 
 export function Hero() {
   return (
