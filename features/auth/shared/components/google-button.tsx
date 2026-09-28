@@ -45,7 +45,7 @@ export function GoogleButton({ from, next, getConsents, onError }: GoogleButtonP
       variant="outline"
       onClick={start}
       disabled={pending}
-      className="h-11 w-full rounded-[var(--radius-control)] border-ink-3/40 text-[15px] text-ink"
+      className="h-11 w-full rounded-[var(--radius-control)] border-line bg-bg-soft text-[15px] font-medium text-ink shadow-none hover:bg-line/60"
     >
       <GoogleLogo />
       {pending ? "Abriendo Google…" : "Continuar con Google"}
@@ -57,7 +57,7 @@ export function GoogleButton({ from, next, getConsents, onError }: GoogleButtonP
 // los lectores de pantalla ya anuncian el botón y los campos.
 export function AuthDivider({ label }: { label: string }) {
   return (
-    <div className="flex items-center gap-3 text-xs text-ink-3" aria-hidden>
+    <div className="flex items-center gap-3 text-[11px] font-semibold uppercase tracking-wider text-ink-3" aria-hidden>
       <span className="h-px flex-1 bg-line" />
       <span>{label}</span>
       <span className="h-px flex-1 bg-line" />
