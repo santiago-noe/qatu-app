@@ -5,7 +5,7 @@ import { cn } from "@/lib/utils";
 import { Container } from "@/components/layout/container";
 import { SectionHeading } from "@/components/layout/section-heading";
 import type { CategoryItem, CategorySectionData } from "../lib/content";
-import { buildSearchUrl, toSlug } from "../lib/search";
+import { buildSearchUrl } from "../lib/search";
 
 const VISIBLE = 5;
 
@@ -40,9 +40,16 @@ function CardVisual({ item, featured }: { item: CategoryItem; featured: boolean 
   ) : null;
 }
 
+interface CategorySectionProps {
+  section: CategorySectionData;
+  /** Tarjetas del catálogo de qatu-api; sin tarjetas (API caído) la sección no se muestra. */
+  items: CategoryItem[];
+}
+
 // Mosaico de categorías (herramientas u oficios): la primera tarjeta destaca a doble tamaño.
-export function CategorySection({ section }: { section: CategorySectionData }) {
-  const { id, tab, intro, cta, tone, items } = section;
+export function CategorySection({ section, items }: CategorySectionProps) {
+  const { id, tab, intro, cta, tone } = section;
+  if (items.length === 0) return null;
   const titleId = `${id}-titulo`;
   const visible = items.slice(0, VISIBLE);
   const hasMore = items.length > VISIBLE;
@@ -71,14 +78,14 @@ export function CategorySection({ section }: { section: CategorySectionData }) {
             const featured = i === 0;
             return (
               <li
-                key={item.name}
+                key={item.slug}
                 className={cn(
                   "aspect-[4/5] w-[80%] shrink-0 snap-start sm:w-[55%] md:aspect-[4/3] md:w-auto lg:aspect-auto",
                   featured && "md:col-span-2 lg:row-span-2",
                 )}
               >
                 <Link
-                  href={buildSearchUrl({ tab, category: toSlug(item.name) })}
+                  href={buildSearchUrl({ tab, category: item.slug })}
                   className="group relative flex h-full overflow-hidden rounded-[var(--radius-card)] bg-ink"
                 >
                   <CardVisual item={item} featured={featured} />
