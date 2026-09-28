@@ -39,17 +39,23 @@ export function passError(res: Response, body: unknown) {
   return out;
 }
 
+interface ForwardOptions {
+  method?: "POST" | "PUT" | "PATCH";
+  /** Registro o inicio de sesión: el token va a la cookie httpOnly y sale del cuerpo. */
+  startsSession?: boolean;
+}
+
 /**
- * Reenvía un POST JSON a qatu-api. Si es un acceso (registro o inicio de sesión), guarda el
- * token en la cookie httpOnly y lo quita del cuerpo: el navegador nunca lo ve.
+ * Reenvía un cuerpo JSON a qatu-api (POST por defecto). Si es un acceso, guarda el token en la
+ * cookie httpOnly y lo quita del cuerpo: el navegador nunca lo ve.
  */
-export async function forwardJson(req: NextRequest, path: string, opts: { startsSession?: boolean } = {}) {
+export async function forwardJson(req: NextRequest, path: string, opts: ForwardOptions = {}) {
   if (!isJson(req)) return errorResponse(415, "solicitud_invalida", "El cuerpo debe ser JSON.");
   let res: Response;
   try {
     res = await backendFetch(
       path,
-      { method: "POST", headers: { "Content-Type": "application/json" }, body: await req.text() },
+      { method: opts.method ?? "POST", headers: { "Content-Type": "application/json" }, body: await req.text() },
       backendContext(req),
     );
   } catch {
@@ -64,6 +70,25 @@ export async function forwardJson(req: NextRequest, path: string, opts: { starts
   const { session, ...rest } = body as ApiAuthResponse;
   const out = NextResponse.json(rest, { status: res.status });
   setSessionCookie(out, session.token, new Date(session.expires_at));
+  return out;
+}
+
+/**
+ * Reenvía un GET a qatu-api con la sesión del navegador (si la hay) y copia su Cache-Control:
+ * el catálogo público se puede reutilizar unos minutos.
+ */
+export async function forwardGet(req: NextRequest, path: string) {
+  let res: Response;
+  try {
+    res = await backendFetch(path, {}, backendContext(req));
+  } catch {
+    return backendUnreachable();
+  }
+  const body: unknown = await res.json().catch(() => null);
+  if (!res.ok) return passError(res, body);
+  const out = NextResponse.json(body);
+  const cacheControl = res.headers.get("cache-control");
+  if (cacheControl) out.headers.set("Cache-Control", cacheControl);
   return out;
 }
 
