@@ -21,6 +21,13 @@ export function backendFetch(path: string, init: RequestInit = {}, ctx: BackendC
   return fetch(`${API_BASE_URL}/api/v1${path}`, { ...init, headers, cache: "no-store" });
 }
 
+/** GET a qatu-api desde el servidor que falla si la respuesta no es 2xx (datos públicos de páginas). */
+export async function backendJSON<T>(path: string, ctx: BackendContext = {}): Promise<T> {
+  const res = await backendFetch(path, {}, ctx);
+  if (!res.ok) throw new Error(`qatu-api GET ${path} respondió ${res.status}`);
+  return res.json() as Promise<T>;
+}
+
 /** Error público de qatu-api: {"error": "codigo", "message": "texto"}. */
 export interface ApiError {
   error: string;
@@ -46,4 +53,29 @@ export interface ApiAuthResponse {
   user: ApiUser;
   two_factor_required: boolean;
   verification_sent?: boolean;
+}
+
+/** Ciudad habilitada (GET /cities). */
+export interface ApiCity {
+  slug: string;
+  name: string;
+  region: string;
+  timezone: string;
+  center: { lat: number; lng: number };
+}
+
+/** Distrito de una ciudad (GET /cities/{slug}/zones). */
+export interface ApiZone {
+  id: string;
+  slug: string;
+  name: string;
+  ubigeo?: string;
+  /** Tiene límite: se puede detectar por la ubicación del navegador. */
+  detectable: boolean;
+}
+
+/** Ciudad y distrito (GET /geo/zone y /me/location). */
+export interface ApiLocation {
+  city: ApiCity;
+  zone: ApiZone;
 }
