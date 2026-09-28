@@ -4,7 +4,8 @@ import { useRouter } from "next/navigation";
 import { KeyRound, Mail } from "lucide-react";
 import { FormAlert } from "@/components/form/form-alert";
 import { TextField } from "@/components/form/text-field";
-import { ROUTES, safeNextPath } from "@/lib/session";
+import type { ApiAuthResponse } from "@/lib/api";
+import { ROUTES, safeNextPath, withNext } from "@/lib/session";
 import { AuthDivider, GoogleButton } from "@/features/auth/shared/components/google-button";
 import { PrivacyNote } from "@/features/auth/shared/components/privacy-note";
 import { SubmitButton } from "@/features/auth/shared/components/submit-button";
@@ -30,13 +31,15 @@ export function SigninForm({ next, initialAlert }: SigninFormProps) {
     const email = String(form.get("email") ?? "");
     const password = String(form.get("password") ?? "");
 
-    const ok = await submit(
+    const ok = await submit<Omit<ApiAuthResponse, "session">>(
       "/api/auth/login",
       { email, password },
       { email: validateEmail(email), password: validateCurrentPassword(password) },
     );
     if (ok) {
-      router.replace(safeNextPath(next));
+      // Roles internos: el código del segundo paso antes de seguir al destino.
+      const target = safeNextPath(next);
+      router.replace(ok.data.two_factor_required ? withNext(ROUTES.twoFactor, target) : target);
       router.refresh();
     }
   }
