@@ -1,7 +1,8 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { NEXT_PARAM, ROUTES, SESSION_COOKIE } from "@/lib/session";
 
-const PROTECTED_PREFIXES = [ROUTES.dashboard];
+// Confirmar el correo y el segundo paso actúan sobre la sesión: sin ella no hay nada que confirmar.
+const PROTECTED_PREFIXES = [ROUTES.dashboard, ROUTES.verifyEmail, ROUTES.twoFactor];
 const GUEST_ONLY_PREFIXES = [
   ROUTES.signin,
   ROUTES.signup,
