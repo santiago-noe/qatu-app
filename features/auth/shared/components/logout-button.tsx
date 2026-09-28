@@ -5,7 +5,7 @@ import { useState } from "react";
 import { LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ROUTES } from "@/lib/session";
-import { postToBff } from "@/features/auth/shared/lib/client";
+import { callBff } from "@/lib/bff-client";
 
 // Cierra la sesión en este dispositivo. El BFF borra la cookie aunque el API no responda.
 export function LogoutButton({ className }: { className?: string }) {
@@ -14,7 +14,7 @@ export function LogoutButton({ className }: { className?: string }) {
 
   async function logout() {
     setPending(true);
-    await postToBff("/api/auth/logout");
+    await callBff("/api/auth/logout", { method: "POST" });
     router.replace(ROUTES.home);
     router.refresh();
   }
