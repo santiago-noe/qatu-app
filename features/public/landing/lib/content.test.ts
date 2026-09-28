@@ -3,28 +3,32 @@ import { join } from "node:path";
 import { describe, expect, test } from "bun:test";
 import { LEGAL_LINKS, NAV_LINKS } from "@/lib/site";
 import * as content from "./content";
-import { FAQ, HERO, TOOL_SECTION, TRADE_SECTION } from "./content";
-import { toSlug } from "./search";
+import type { ApiCategory } from "@/lib/api";
+import { CATEGORY_IMAGES, FAQ, HERO, TOOL_SECTION, TRADE_SECTION, toCategoryItems } from "./content";
 
-const SECTIONS = [TOOL_SECTION, TRADE_SECTION];
 const publicFile = (src: string) => join(process.cwd(), "public", src);
 
-describe("secciones de categorías", () => {
-  test.each(SECTIONS.map((s) => [s.id, s] as const))("%s: slugs únicos", (_, section) => {
-    const slugs = section.items.map((i) => toSlug(i.name));
-    expect(new Set(slugs).size).toBe(slugs.length);
-  });
+const fromApi = (slug: string, icon?: string): ApiCategory => ({ id: slug, slug, name: slug, icon, risk_level: "medium" });
 
-  test.each(SECTIONS.map((s) => [s.id, s] as const))("%s: cada tarjeta tiene foto o ícono", (_, section) => {
-    for (const item of section.items) expect(Boolean(item.image || item.icon)).toBe(true);
-  });
-
+describe("tarjetas de categorías (catálogo de qatu-api)", () => {
   test("las fotos declaradas existen en public/", () => {
-    const images = [HERO.image, ...SECTIONS.flatMap((s) => s.items.flatMap((i) => (i.image ? [i.image] : [])))];
-    for (const image of images) {
+    for (const image of [HERO.image, ...Object.values(CATEGORY_IMAGES)]) {
       expect(existsSync(publicFile(image.src)), image.src).toBe(true);
       expect(image.alt.length).toBeGreaterThan(0);
     }
+  });
+
+  test("herramientas: la foto por slug; una categoría nueva sin foto muestra su ícono", () => {
+    const [construccion, nueva] = toCategoryItems([fromApi("construccion", "HardHat"), fromApi("soldadura", "Zap")], true);
+    expect(construccion.image?.src).toBe("/images/categories/construccion.webp");
+    expect(nueva.image).toBeUndefined();
+    expect(nueva.icon).toBeDefined();
+  });
+
+  test("oficios: sin fotos aunque el slug coincida (Pintura existe en ambas verticales)", () => {
+    const [pintura] = toCategoryItems([fromApi("pintura", "PaintRoller")], false);
+    expect(pintura.image).toBeUndefined();
+    expect(pintura.slug).toBe("pintura");
   });
 });
 
