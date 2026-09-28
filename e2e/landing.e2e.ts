@@ -1,5 +1,6 @@
 import AxeBuilder from "@axe-core/playwright";
 import { expect, test, type Page } from "@playwright/test";
+import { apiAvailable } from "./helpers";
 
 const isMobile = (page: Page) => (page.viewportSize()?.width ?? 0) < 768;
 
@@ -65,9 +66,27 @@ test("la cabecera se oculta al bajar y reaparece al subir", async ({ page }) => 
   await expect.poll(async () => (await header.boundingBox())?.y ?? -1).toBe(0);
 });
 
-test("cada tarjeta de categoría lleva a la búsqueda filtrada", async ({ page }) => {
-  await page.locator("#herramientas").getByRole("link", { name: /Construcción/ }).click();
-  await expect(page).toHaveURL(/\/buscar\?tab=rent&category=construccion/);
+test.describe("catálogo de qatu-api", () => {
+  test.beforeEach(async () => {
+    test.skip(!(await apiAvailable()), "qatu-api no está corriendo");
+  });
+
+  test("las tarjetas salen del catálogo y llevan a la búsqueda filtrada", async ({ page }) => {
+    const tools = page.locator("#herramientas");
+    await expect(tools.getByRole("link", { name: /Jardín/ })).toBeVisible();
+    // Eventos y audiovisual existe pero está apagada (fase 2): no se muestra.
+    await expect(tools.getByRole("link", { name: /Eventos/ })).toHaveCount(0);
+    await tools.getByRole("link", { name: /Construcción/ }).click();
+    await expect(page).toHaveURL(/\/buscar\?tab=rent&category=construccion/);
+    await expect(page.getByText("Categoría: Construcción")).toBeVisible();
+  });
+
+  test("los distritos del buscador salen del catálogo", async ({ page }) => {
+    await expect(page.locator("#buscar").getByText(/Distritos del piloto: .*Andrés Avelino Cáceres Dorregaray/)).toBeVisible();
+    await page.goto("/buscar?tab=hire&zone=carmen-alto&category=gasfiteria");
+    await expect(page.getByText("Zona: Carmen Alto")).toBeVisible();
+    await expect(page.getByText("Categoría: Gasfitería")).toBeVisible();
+  });
 });
 
 test("los enlaces legales responden, incluido el Libro de Reclamaciones", async ({ page, request }) => {
