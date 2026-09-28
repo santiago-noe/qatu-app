@@ -1,11 +1,13 @@
 "use client";
 
 import { useRouter } from "next/navigation";
+import { KeyRound, Mail } from "lucide-react";
 import { FormAlert } from "@/components/form/form-alert";
 import { TextField } from "@/components/form/text-field";
-import { Button } from "@/components/ui/button";
 import { ROUTES, safeNextPath } from "@/lib/session";
 import { AuthDivider, GoogleButton } from "@/features/auth/shared/components/google-button";
+import { PrivacyNote } from "@/features/auth/shared/components/privacy-note";
+import { SubmitButton } from "@/features/auth/shared/components/submit-button";
 import { TextLink } from "@/features/auth/shared/components/text-link";
 import { useAuthForm } from "@/features/auth/shared/lib/use-auth-form";
 import { validateCurrentPassword, validateEmail } from "@/features/auth/shared/lib/validation";
@@ -40,26 +42,34 @@ export function SigninForm({ next, initialAlert }: SigninFormProps) {
   }
 
   return (
-    <div className="flex flex-col gap-5">
+    <div className="flex flex-col gap-4">
       <FormAlert>{alert}</FormAlert>
-      <GoogleButton from="signin" next={next} onError={setAlert} />
-      <AuthDivider label="o con tu correo" />
       <form ref={formRef} onSubmit={onSubmit} noValidate className="flex flex-col gap-4">
-        <TextField label="Correo" name="email" type="email" autoComplete="email" inputMode="email" error={errors.email} />
+        <TextField
+          label="Correo electrónico"
+          icon={Mail}
+          name="email"
+          type="email"
+          autoComplete="email"
+          inputMode="email"
+          placeholder="ejemplo@correo.pe"
+          error={errors.email}
+        />
         <TextField
           label="Contraseña"
+          icon={KeyRound}
+          action={<TextLink href={ROUTES.recovery}>¿Olvidaste tu contraseña?</TextLink>}
           name="password"
           type="password"
           autoComplete="current-password"
+          placeholder="Ingresa tu contraseña"
           error={errors.password}
         />
-        <div className="-mt-1 flex justify-end text-sm">
-          <TextLink href={ROUTES.recovery}>¿Olvidaste tu contraseña?</TextLink>
-        </div>
-        <Button type="submit" disabled={pending} className="h-11 rounded-[var(--radius-control)] text-[15px]">
-          {pending ? "Ingresando…" : "Iniciar sesión"}
-        </Button>
+        <SubmitButton pending={pending} label="Iniciar sesión en Qatu" pendingLabel="Ingresando…" />
       </form>
+      <AuthDivider label="o continúa con" />
+      <GoogleButton from="signin" next={next} onError={setAlert} />
+      <PrivacyNote />
     </div>
   );
 }
