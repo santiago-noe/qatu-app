@@ -1,11 +1,10 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { DISTRICTS } from "@/features/public/landing/lib/content";
-import { toSlug } from "@/features/public/landing/lib/search";
 
 export interface SearchPendingProps {
   tab?: string;
   q?: string;
+  /** Nombres visibles (del catálogo de qatu-api); si el slug no existe llega el slug tal cual. */
   zone?: string;
   from?: string;
   to?: string;
@@ -18,7 +17,7 @@ export function SearchPending({ tab, q, zone, from, to, category }: SearchPendin
     tab === "hire" ? "Contratar servicios" : "Alquilar herramientas",
     q && `“${q}”`,
     category && `Categoría: ${category}`,
-    zone && `Zona: ${DISTRICTS.find((d) => toSlug(d) === zone) ?? zone}`,
+    zone && `Zona: ${zone}`,
     from && `Desde ${from}`,
     to && `Hasta ${to}`,
   ].filter(Boolean) as string[];
