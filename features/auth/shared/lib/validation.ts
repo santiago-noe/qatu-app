@@ -37,6 +37,18 @@ export function validateConsents(adultDeclared: boolean, acceptLegal: boolean) {
   };
 }
 
+export const CODE_LENGTH = 6;
+const CODE_SHAPE = /^\d{6}$/;
+
+/** Código de 6 dígitos del correo; se aceptan espacios al pegarlo ("123 456"). */
+export const normalizeCode = (value: string) => value.replace(/\s/g, "");
+
+export function validateCode(value: string): string | undefined {
+  const code = normalizeCode(value);
+  if (!code) return "Escribe el código que te enviamos.";
+  if (!CODE_SHAPE.test(code)) return `El código tiene ${CODE_LENGTH} dígitos.`;
+}
+
 export function validateName(value: string): string | undefined {
   const name = value.trim();
   if (!name) return "Escribe tu nombre.";

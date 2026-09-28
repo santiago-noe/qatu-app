@@ -3,6 +3,7 @@ import {
   hasErrors,
   PASSWORD_MIN,
   validateConsents,
+  validateCode,
   validateCurrentPassword,
   validateEmail,
   validateName,
@@ -51,4 +52,12 @@ test("validateConsents exige ambas casillas", () => {
 test("hasErrors ignora los campos sin mensaje", () => {
   expect(hasErrors({ email: undefined })).toBe(false);
   expect(hasErrors({ email: "Escribe tu correo." })).toBe(true);
+});
+
+test("validateCode acepta 6 dígitos, también pegados con espacios", () => {
+  expect(validateCode("123456")).toBeUndefined();
+  expect(validateCode(" 123 456 ")).toBeUndefined();
+  expect(validateCode("")).toBeString();
+  expect(validateCode("12345")).toBeString();
+  expect(validateCode("12345a")).toBeString();
 });
