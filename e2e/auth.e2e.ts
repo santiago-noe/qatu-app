@@ -1,31 +1,6 @@
 import AxeBuilder from "@axe-core/playwright";
-import { expect, test, type Page } from "@playwright/test";
-
-// El flujo completo necesita qatu-api (docker compose + make run) sin secreto de Turnstile.
-const API_HEALTH = `${process.env.API_BASE_URL ?? "http://localhost:8080"}/api/v1/health`;
-const PASSWORD = "una frase larga de prueba";
-// El registro calcula argon2 y envía el correo: con varias pruebas en paralelo puede tardar.
-const AFTER_SIGNUP = { timeout: 15_000 };
-
-async function apiAvailable() {
-  try {
-    return (await fetch(API_HEALTH)).ok;
-  } catch {
-    return false;
-  }
-}
-
-const uniqueEmail = () => `e2e-${Date.now()}-${Math.floor(Math.random() * 1e6)}@qatu.pe`;
-
-async function signup(page: Page, email: string) {
-  await page.goto("/auth/signup");
-  await page.getByLabel("Nombre y apellido").fill("Ana Quispe");
-  await page.getByLabel("Correo").fill(email);
-  await page.getByLabel("Contraseña", { exact: true }).fill(PASSWORD);
-  await page.getByLabel("Declaro que soy mayor de 18 años.").check();
-  await page.getByLabel(/Acepto los/).check();
-  await page.getByRole("button", { name: "Crear mi cuenta" }).click();
-}
+import { expect, test } from "@playwright/test";
+import { AFTER_SIGNUP, apiAvailable, PASSWORD, signup, uniqueEmail } from "./helpers";
 
 test.describe("sin API", () => {
   test("el registro valida en el navegador y lleva el foco al primer error", async ({ page }) => {
