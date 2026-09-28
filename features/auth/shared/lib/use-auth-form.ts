@@ -1,11 +1,13 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { turnstileEnabled } from "@/components/form/turnstile";
 import { callBff } from "@/lib/bff-client";
 import { fieldForError } from "./field-errors";
 import { hasErrors, type FieldErrors } from "./validation";
 
 interface SubmitOptions {
+  /** Formularios con captcha: null mientras la persona no lo resuelva. */
   turnstileToken?: string | null;
   /** Se llama si la petición llegó al servidor y falló (por ejemplo, para pedir otro captcha). */
   onServerError?: () => void;
@@ -14,6 +16,7 @@ interface SubmitOptions {
 /**
  * Estado común de los formularios de acceso: errores por campo, aviso general y envío.
  * submit valida en el navegador, llama al BFF y reparte los errores de qatu-api en sus campos.
+ * Devuelve {data} si salió bien (data vacío en 202 y 204) o undefined si hubo un error.
  */
 export function useAuthForm<F extends string>(fields: readonly F[], initialAlert?: string) {
   const formRef = useRef<HTMLFormElement>(null);
@@ -31,10 +34,14 @@ export function useAuthForm<F extends string>(fields: readonly F[], initialAlert
     setAlert(undefined);
     setErrors(clientErrors);
     if (hasErrors(clientErrors)) return undefined;
+    if (turnstileEnabled && opts.turnstileToken === null) {
+      setAlert("Completa la verificación de seguridad para continuar.");
+      return undefined;
+    }
 
     setPending(true);
     const result = await callBff<T>(path, { body, turnstileToken: opts.turnstileToken });
-    if (result.ok) return result.data; // sigue "pendiente" mientras la página navega
+    if (result.ok) return { data: result.data }; // sigue "pendiente" mientras la página navega
 
     setPending(false);
     opts.onServerError?.();
