@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { postToBff } from "@/features/auth/shared/lib/client";
+import { callBff } from "@/lib/bff-client";
 
 export interface GoogleConsents {
   adult_declared: boolean;
@@ -30,7 +30,7 @@ export function GoogleButton({ from, next, getConsents, onError }: GoogleButtonP
     const consents = getConsents ? getConsents() : { adult_declared: false, accept_legal: false };
     if (!consents) return;
     setPending(true);
-    const result = await postToBff<{ url: string }>("/api/auth/google/start", { ...consents, next, from });
+    const result = await callBff<{ url: string }>("/api/auth/google/start", { body: { ...consents, next, from } });
     if (result.ok) {
       window.location.assign(result.data.url); // la página sigue "pendiente" mientras sale hacia Google
       return;
