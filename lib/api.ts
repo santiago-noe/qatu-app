@@ -79,3 +79,16 @@ export interface ApiLocation {
   city: ApiCity;
   zone: ApiZone;
 }
+
+/** Categoría u oficio del catálogo público (GET /catalog/categories). */
+export interface ApiCategory {
+  id: string;
+  slug: string;
+  name: string;
+  description?: string;
+  /** Nombre de un ícono de lucide-react (lib/catalog-icons.ts lo traduce). */
+  icon?: string;
+  risk_level: "low" | "medium" | "high";
+  attributes_schema?: unknown;
+  children?: ApiCategory[];
+}
