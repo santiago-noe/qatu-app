@@ -11,16 +11,6 @@ export interface SearchParams {
 
 export const ALL_ZONES = "todo";
 
-/** "Hidrolavadoras y aspiradoras" -> "hidrolavadoras-y-aspiradoras" */
-export function toSlug(text: string): string {
-  return text
-    .normalize("NFD")
-    .replace(/[̀-ͯ]/g, "")
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-+|-+$/g, "");
-}
-
 /** Fecha local a yyyy-mm-dd, sin pasar por UTC (en Lima, toISOString puede cambiar el día). */
 export function toIsoDate(date: Date | undefined): string {
   if (!date) return "";
