@@ -1,6 +1,6 @@
 import AxeBuilder from "@axe-core/playwright";
 import { expect, test, type Page } from "@playwright/test";
-import { AFTER_SIGNUP, apiAvailable, signup } from "./helpers";
+import { AFTER_SIGNUP, apiAvailable, signup, VERIFY_EMAIL_URL } from "./helpers";
 
 const PLAZA_DE_ARMAS = { latitude: -13.1631, longitude: -74.2237 };
 const LIMA = { latitude: -12.0464, longitude: -77.0428 };
@@ -8,7 +8,8 @@ const LIMA = { latitude: -12.0464, longitude: -77.0428 };
 test.beforeEach(async ({ page }) => {
   test.skip(!(await apiAvailable()), "qatu-api no está corriendo");
   await signup(page);
-  await expect(page).toHaveURL(/\/dashboard$/, AFTER_SIGNUP);
+  await expect(page).toHaveURL(VERIFY_EMAIL_URL, AFTER_SIGNUP);
+  await page.getByRole("link", { name: "Ir a mi panel" }).click();
 });
 
 const card = (page: Page) => page.getByRole("region", { name: "Tu distrito" });
