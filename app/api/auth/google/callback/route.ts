@@ -2,6 +2,7 @@ import { NextResponse, type NextRequest } from "next/server";
 import { backendFetch, type ApiAuthResponse } from "@/lib/api";
 import { backendContext, setSessionCookie } from "@/lib/bff";
 import { backToAuthPage, clearFlow, readFlow } from "@/lib/google-auth";
+import { ROUTES, withNext } from "@/lib/session";
 
 // GET /api/auth/google/callback: aquí vuelve Google (URI de redireccionamiento autorizada).
 // Comprueba que el state sea el de este navegador, pide a qatu-api que canjee el código y deja
@@ -31,7 +32,9 @@ export async function GET(req: NextRequest) {
   const body = (await res.json().catch(() => null)) as (ApiAuthResponse & { error?: string }) | null;
   if (!res.ok || !body?.session) return backToAuthPage(req, from, body?.error ?? "google_fallido");
 
-  const out = NextResponse.redirect(new URL(flow.next, req.url));
+  // Roles internos: el segundo paso aplica igual que con contraseña.
+  const target = body.two_factor_required ? withNext(ROUTES.twoFactor, flow.next) : flow.next;
+  const out = NextResponse.redirect(new URL(target, req.url));
   setSessionCookie(out, body.session.token, new Date(body.session.expires_at));
   clearFlow(out);
   return out;
