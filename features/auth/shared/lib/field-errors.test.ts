@@ -1,5 +1,5 @@
 import { expect, test } from "bun:test";
-import { fieldForError } from "./client";
+import { fieldForError } from "./field-errors";
 
 const SIGNUP_FIELDS = ["name", "email", "password", "adult_declared", "accept_legal"] as const;
 
