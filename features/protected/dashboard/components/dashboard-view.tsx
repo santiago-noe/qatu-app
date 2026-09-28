@@ -2,7 +2,9 @@ import { CircleAlert, CircleCheck } from "lucide-react";
 import { Container } from "@/components/layout/container";
 import { Logo } from "@/components/layout/logo";
 import type { ApiUser } from "@/lib/api";
+import { ROUTES } from "@/lib/session";
 import { LogoutButton } from "@/features/auth/shared/components/logout-button";
+import { TextLink } from "@/features/auth/shared/components/text-link";
 
 interface DashboardViewProps {
   user: ApiUser;
@@ -42,8 +44,10 @@ export function DashboardView({ user, children }: DashboardViewProps) {
               ) : (
                 <p className="mt-3 flex items-start gap-2 text-sm text-ink-2">
                   <CircleAlert className="mt-0.5 size-4 shrink-0 text-brand-text" strokeWidth={1.5} aria-hidden />
-                  Confirma tu correo con el código que te enviamos para poder alquilar y contratar. Mientras
-                  tanto puedes explorar Qatu.
+                  <span>
+                    Confirma tu correo con el código que te enviamos para poder alquilar y contratar. Mientras
+                    tanto puedes explorar Qatu. <TextLink href={ROUTES.verifyEmail}>Confirmar mi correo</TextLink>
+                  </span>
                 </p>
               )}
               {user.status === "suspended" && (
