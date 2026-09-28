@@ -4,6 +4,8 @@ import { expect, test, type Page } from "@playwright/test";
 // El flujo completo necesita qatu-api (docker compose + make run) sin secreto de Turnstile.
 const API_HEALTH = `${process.env.API_BASE_URL ?? "http://localhost:8080"}/api/v1/health`;
 const PASSWORD = "una frase larga de prueba";
+// El registro calcula argon2 y envía el correo: con varias pruebas en paralelo puede tardar.
+const AFTER_SIGNUP = { timeout: 15_000 };
 
 async function apiAvailable() {
   try {
@@ -22,24 +24,25 @@ async function signup(page: Page, email: string) {
   await page.getByLabel("Contraseña", { exact: true }).fill(PASSWORD);
   await page.getByLabel("Declaro que soy mayor de 18 años.").check();
   await page.getByLabel(/Acepto los/).check();
-  await page.getByRole("button", { name: "Crear cuenta" }).click();
+  await page.getByRole("button", { name: "Crear mi cuenta" }).click();
 }
 
 test.describe("sin API", () => {
   test("el registro valida en el navegador y lleva el foco al primer error", async ({ page }) => {
     await page.goto("/auth/signup");
-    await page.getByRole("button", { name: "Crear cuenta" }).click();
+    await page.getByRole("button", { name: "Crear mi cuenta" }).click();
     await expect(page.getByText("Escribe tu nombre.")).toBeVisible();
     await expect(page.getByText("Escribe tu correo.")).toBeVisible();
     await expect(page.getByText("Debes ser mayor de 18 años para crear una cuenta.")).toBeVisible();
-    // Las casillas van primero: sirven tanto para el correo como para Google.
-    await expect(page.getByLabel("Declaro que soy mayor de 18 años.")).toBeFocused();
+    await expect(page.getByLabel("Nombre y apellido")).toBeFocused();
   });
 
   test("registrarse con Google pide antes las casillas y no sale del sitio", async ({ page }) => {
     await page.goto("/auth/signup");
     await page.getByRole("button", { name: "Continuar con Google" }).click();
     await expect(page.getByText("Acepta los términos y la política de privacidad para continuar.")).toBeVisible();
+    // El foco baja a la casilla que falta, aunque esté al final del formulario.
+    await expect(page.getByLabel("Declaro que soy mayor de 18 años.")).toBeFocused();
     await expect(page).toHaveURL(/\/auth\/signup$/);
   });
 
@@ -85,7 +88,7 @@ test.describe("con API", () => {
   test("registro, cierre de sesión e inicio de sesión", async ({ page, context }) => {
     const email = uniqueEmail();
     await signup(page, email);
-    await expect(page).toHaveURL(/\/dashboard$/);
+    await expect(page).toHaveURL(/\/dashboard$/, AFTER_SIGNUP);
     await expect(page.getByRole("heading", { name: "Hola, Ana" })).toBeVisible();
     await expect(page.getByText("Confirma tu correo")).toBeVisible();
 
@@ -108,7 +111,7 @@ test.describe("con API", () => {
   test("un correo ya registrado se marca en su campo", async ({ page, context }) => {
     const email = uniqueEmail();
     await signup(page, email);
-    await expect(page).toHaveURL(/\/dashboard$/);
+    await expect(page).toHaveURL(/\/dashboard$/, AFTER_SIGNUP);
     await context.clearCookies();
 
     await signup(page, email);
