@@ -1,18 +1,7 @@
 import { describe, expect, test } from "bun:test";
-import { ALL_ZONES, buildSearchUrl, toIsoDate, toSlug, validateDates } from "./search";
+import { ALL_ZONES, buildSearchUrl, toIsoDate, validateDates } from "./search";
 
 const params = (url: string) => new URL(url, "http://localhost").searchParams;
-
-describe("toSlug", () => {
-  test.each([
-    ["Construcción", "construccion"],
-    ["Carpintería y taller", "carpinteria-y-taller"],
-    ["Jesús Nazareno", "jesus-nazareno"],
-    ["  Albañilería menor! ", "albanileria-menor"],
-  ])("%p -> %p", (input, expected) => {
-    expect(toSlug(input)).toBe(expected);
-  });
-});
 
 describe("toIsoDate", () => {
   test("usa la fecha local, no UTC", () => {
