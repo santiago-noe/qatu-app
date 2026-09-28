@@ -1,21 +1,22 @@
+import { Logo } from "@/components/layout/logo";
+
 interface AuthCardProps {
   title: string;
   description: string;
   children: React.ReactNode;
-  /** Enlace alternativo bajo la tarjeta ("¿No tienes cuenta? Regístrate"). */
+  /** Enlace alternativo al pie ("¿Aún no tienes cuenta? Regístrate gratis"). */
   footer?: React.ReactNode;
 }
 
-// Marco común de las pantallas de acceso: título, texto y formulario en una tarjeta.
+// Columna del formulario de acceso: logo (vuelve al inicio), título, texto y formulario.
 export function AuthCard({ title, description, children, footer }: AuthCardProps) {
   return (
-    <div className="w-full max-w-md">
-      <div className="rounded-[var(--radius-card)] border border-line bg-bg px-5 py-8 sm:px-8">
-        <h1 className="text-2xl font-semibold tracking-tight text-ink">{title}</h1>
-        <p className="mt-1.5 text-[15px] text-ink-2">{description}</p>
-        <div className="mt-6">{children}</div>
-      </div>
-      {footer && <p className="mt-6 text-center text-sm text-ink-2">{footer}</p>}
+    <div className="mx-auto w-full max-w-[420px]">
+      <Logo priority height={36} />
+      <h1 className="mt-5 text-2xl font-bold tracking-tight text-ink sm:text-[26px]">{title}</h1>
+      <p className="mt-1.5 text-[15px] leading-relaxed text-ink-2">{description}</p>
+      <div className="mt-5">{children}</div>
+      {footer && <p className="mt-5 text-center text-sm text-ink-2">{footer}</p>}
     </div>
   );
 }
