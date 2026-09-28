@@ -2,20 +2,20 @@
 
 import { useRouter } from "next/navigation";
 import { useRef, useState } from "react";
-import { KeyRound, Mail, UserRound } from "lucide-react";
+import { Mail, UserRound } from "lucide-react";
 import { CheckboxField } from "@/components/form/checkbox-field";
 import { FormAlert } from "@/components/form/form-alert";
 import { TextField } from "@/components/form/text-field";
-import { Turnstile, turnstileEnabled, type TurnstileHandle } from "@/components/form/turnstile";
+import { Turnstile, type TurnstileHandle } from "@/components/form/turnstile";
 import { ROUTES } from "@/lib/session";
 import { AuthDivider, GoogleButton, type GoogleConsents } from "@/features/auth/shared/components/google-button";
+import { NewPasswordField } from "@/features/auth/shared/components/new-password-field";
 import { PrivacyNote } from "@/features/auth/shared/components/privacy-note";
 import { SubmitButton } from "@/features/auth/shared/components/submit-button";
 import { TextLink } from "@/features/auth/shared/components/text-link";
 import { useAuthForm } from "@/features/auth/shared/lib/use-auth-form";
 import {
   hasErrors,
-  PASSWORD_MIN,
   validateConsents,
   validateEmail,
   validateName,
@@ -57,18 +57,14 @@ export function SignupForm({ initialAlert }: { initialAlert?: string }) {
       password: validateNewPassword(body.password),
       ...validateConsents(body.adult_declared, body.accept_legal),
     };
-    if (turnstileEnabled && !captchaToken && !hasErrors(clientErrors)) {
-      setAlert("Completa la verificación de seguridad para continuar.");
-      return;
-    }
-
     const ok = await submit("/api/auth/register", body, clientErrors, {
       // El token de Turnstile sirve una vez: tras un rechazo se pide otro.
       turnstileToken: captchaToken,
       onServerError: () => turnstile.current?.reset(),
     });
+    // Qatu ya envió el código al correo: se confirma ahora (o luego, desde el panel).
     if (ok) {
-      router.replace(ROUTES.dashboard);
+      router.replace(ROUTES.verifyEmail);
       router.refresh();
     }
   }
@@ -95,16 +91,7 @@ export function SignupForm({ initialAlert }: { initialAlert?: string }) {
           placeholder="ejemplo@correo.pe"
           error={errors.email}
         />
-        <TextField
-          label="Contraseña"
-          icon={KeyRound}
-          name="password"
-          type="password"
-          autoComplete="new-password"
-          placeholder={`Mínimo ${PASSWORD_MIN} caracteres`}
-          hint="Mejor una frase fácil de recordar que símbolos raros."
-          error={errors.password}
-        />
+        <NewPasswordField error={errors.password} />
         <CheckboxField name="adult_declared" error={errors.adult_declared}>
           Declaro que soy mayor de 18 años.
         </CheckboxField>
