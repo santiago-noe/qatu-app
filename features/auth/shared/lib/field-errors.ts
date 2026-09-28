@@ -12,6 +12,8 @@ const FIELD_BY_CODE: Record<string, string> = {
   nombre_invalido: "name",
   mayoria_de_edad_requerida: "adult_declared",
   consentimiento_requerido: "accept_legal",
+  codigo_invalido: "code",
+  codigo_agotado: "code",
 };
 
 /** Campo del formulario al que pertenece el error, si el formulario lo tiene. */
