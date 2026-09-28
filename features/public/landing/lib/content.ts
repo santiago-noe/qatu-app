@@ -1,4 +1,6 @@
 import type { LucideIcon } from "lucide-react";
+import type { ApiCategory } from "@/lib/api";
+import { catalogIcon } from "@/lib/catalog-icons";
 import { ROUTES } from "@/lib/session";
 import type { SearchTab } from "./search";
 import {
@@ -6,28 +8,12 @@ import {
   CalendarDays,
   CircleCheck,
   Handshake,
-  Hammer,
-  KeyRound,
   Lock,
   MapPin,
-  PaintRoller,
-  Ruler,
   Search,
   Scale,
-  Scissors,
-  Sparkles,
   Wallet,
-  Wrench,
-  Zap,
 } from "lucide-react";
-
-export const DISTRICTS = [
-  "Huamanga",
-  "San Juan Bautista",
-  "Carmen Alto",
-  "Jesús Nazareno",
-  "Andrés Avelino Cáceres",
-] as const;
 
 export const SEARCH_TABS = {
   rent: {
@@ -74,7 +60,8 @@ export const HERO = {
 
 export const SEARCH_SECTION = {
   title: "¿Qué necesitas hoy?",
-  districtsNote: `Distritos iniciales: ${DISTRICTS.join(", ")}.`,
+  /** Antecede a la lista de distritos que llega de qatu-api. */
+  districtsLead: "Distritos del piloto",
 } as const;
 
 // La verificación es un filtro, no una garantía (docs/05).
@@ -121,6 +108,8 @@ export interface ImageAsset {
 }
 
 export interface CategoryItem {
+  /** Slug de qatu-api: filtra la búsqueda (/buscar?category=). */
+  slug: string;
   name: string;
   description: string;
   /** Foto de la tarjeta; sin foto se muestra el ícono sobre fondo oscuro. */
@@ -136,11 +125,33 @@ export interface CategorySectionData {
   cta: string;
   /** Fondo de la sección. */
   tone: "white" | "soft";
-  items: CategoryItem[];
 }
 
 // Mosaico: se muestran las 5 primeras (la primera destacada); el resto se alcanza con "Ver todos".
 // Sin precios, cantidades ni "más alquiladas" (design.md, sección 2).
+// Fotos por slug de categoría de qatu-api. Una categoría nueva sin foto muestra su ícono.
+export const CATEGORY_IMAGES: Record<string, ImageAsset> = {
+  construccion: { src: "/images/categories/construccion.webp", alt: "Herramientas eléctricas y equipos de construcción" },
+  "carpinteria-y-taller": {
+    src: "/images/categories/carpinteria.webp",
+    alt: "Herramientas de carpintería sobre un banco de trabajo",
+  },
+  jardin: { src: "/images/categories/jardin.webp", alt: "Cortadora de césped y desbrozadora sobre el pasto" },
+  limpieza: { src: "/images/categories/limpieza.webp", alt: "Balde con implementos de limpieza" },
+  pintura: { src: "/images/categories/pintura.webp", alt: "Rodillo, brocha, cinta y balde de pintura" },
+};
+
+/** Tarjetas a partir del catálogo de qatu-api: la foto si existe (herramientas), si no su ícono. */
+export function toCategoryItems(categories: ApiCategory[], withImages: boolean): CategoryItem[] {
+  return categories.map((c) => ({
+    slug: c.slug,
+    name: c.name,
+    description: c.description ?? "",
+    image: withImages && Object.hasOwn(CATEGORY_IMAGES, c.slug) ? CATEGORY_IMAGES[c.slug] : undefined,
+    icon: catalogIcon(c.icon),
+  }));
+}
+
 export const TOOL_SECTION: CategorySectionData = {
   id: "herramientas",
   tab: "rent",
@@ -151,36 +162,9 @@ export const TOOL_SECTION: CategorySectionData = {
   },
   cta: "Ver equipos",
   tone: "white",
-  items: [] = [
-  {
-    name: "Construcción",
-    description: "Rotomartillos, mezcladoras y más equipos para tu obra.",
-    image: { src: "/images/categories/construccion.webp", alt: "Herramientas eléctricas y equipos de construcción" },
-  },
-  {
-    name: "Carpintería y taller",
-    description: "Sierras, lijadoras y cepilladoras para madera.",
-    image: { src: "/images/categories/carpinteria.webp", alt: "Herramientas de carpintería sobre un banco de trabajo" },
-  },
-  {
-    name: "Jardín",
-    description: "Podadoras, desbrozadoras y motosierras.",
-    image: { src: "/images/categories/jardin.webp", alt: "Cortadora de césped y desbrozadora sobre el pasto" },
-  },
-  {
-    name: "Limpieza",
-    description: "Hidrolavadoras y aspiradoras industriales.",
-    image: { src: "/images/categories/limpieza.webp", alt: "Balde con implementos de limpieza" },
-  },
-  {
-    name: "Pintura",
-    description: "Compresoras, pistolas y escaleras.",
-    image: { src: "/images/categories/pintura.webp", alt: "Rodillo, brocha, cinta y balde de pintura" },
-  },
-],
 };
 
-// Fotos de oficios pendientes: mientras tanto, cada tarjeta muestra su ícono.
+// Oficios: sin fotos todavía; cada tarjeta muestra el ícono que define qatu-api.
 export const TRADE_SECTION: CategorySectionData = {
   id: "servicios",
   tab: "hire",
@@ -191,16 +175,6 @@ export const TRADE_SECTION: CategorySectionData = {
   },
   cta: "Ver técnicos",
   tone: "soft",
-  items: [
-    { icon: Wrench, name: "Gasfitería", description: "Fugas, griferías, termas y mantenimiento de tanques." },
-    { icon: Zap, name: "Electricidad", description: "Cortocircuitos, cableado, tableros e iluminación." },
-    { icon: KeyRound, name: "Cerrajería", description: "Apertura de cerraduras, cambio de cilindros y cerrojos." },
-    { icon: PaintRoller, name: "Pintura", description: "Interiores, fachadas, empastado y sellado de humedad." },
-    { icon: Hammer, name: "Albañilería menor", description: "Resanes, tarrajeo, enchapes y pequeñas refacciones." },
-    { icon: Scissors, name: "Jardinería", description: "Poda, limpieza y mantenimiento de áreas verdes." },
-    { icon: Ruler, name: "Carpintería", description: "Ajuste de puertas, reparación de muebles y armado." },
-    { icon: Sparkles, name: "Limpieza", description: "Limpieza de hogares, oficinas y post obra." },
-  ],
 };
 
 // Franja "Cómo funciona" (design.md, sección 4). El delivery es opcional: "Recoge o recibe" (docs/02).
