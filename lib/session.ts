@@ -8,6 +8,8 @@ export const ROUTES = {
   signin: "/auth/signin",
   signup: "/auth/signup",
   recovery: "/auth/recovery-account",
+  verifyEmail: "/auth/verify-email",
+  twoFactor: "/auth/two-factor",
   dashboard: "/dashboard",
   unauthorized: "/unauthorized",
   terms: "/terminos",
@@ -24,4 +26,9 @@ export const NEXT_PARAM = "next";
 export function safeNextPath(raw: string | null | undefined, fallback: string = ROUTES.dashboard): string {
   if (!raw || !raw.startsWith("/") || raw.startsWith("//") || raw.startsWith("/\\")) return fallback;
   return raw;
+}
+
+/** Ruta con el destino al que se vuelve al terminar (?next=). */
+export function withNext(path: string, next: string): string {
+  return `${path}?${NEXT_PARAM}=${encodeURIComponent(next)}`;
 }

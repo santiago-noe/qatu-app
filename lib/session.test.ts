@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { ROUTES, safeNextPath } from "./session";
+import { ROUTES, safeNextPath, withNext } from "./session";
 
 describe("safeNextPath", () => {
   test.each([
@@ -15,4 +15,8 @@ describe("safeNextPath", () => {
       expect(safeNextPath(input)).toBe(ROUTES.dashboard);
     },
   );
+});
+
+test("withNext codifica el destino para que no rompa la URL", () => {
+  expect(withNext(ROUTES.twoFactor, "/dashboard?tab=a&b=c")).toBe("/auth/two-factor?next=%2Fdashboard%3Ftab%3Da%26b%3Dc");
 });
