@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { fieldForError, postToBff } from "./client";
+import { callBff } from "@/lib/bff-client";
+import { fieldForError } from "./field-errors";
 import { hasErrors, type FieldErrors } from "./validation";
 
 interface SubmitOptions {
@@ -32,7 +33,7 @@ export function useAuthForm<F extends string>(fields: readonly F[], initialAlert
     if (hasErrors(clientErrors)) return undefined;
 
     setPending(true);
-    const result = await postToBff<T>(path, body, { turnstileToken: opts.turnstileToken });
+    const result = await callBff<T>(path, { body, turnstileToken: opts.turnstileToken });
     if (result.ok) return result.data; // sigue "pendiente" mientras la página navega
 
     setPending(false);
