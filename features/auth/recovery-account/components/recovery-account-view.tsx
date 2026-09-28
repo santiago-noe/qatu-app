@@ -1,10 +1,10 @@
-import { ComingSoon } from "@/components/layout/coming-soon";
+import { AuthShell } from "@/features/auth/shared/components/auth-shell";
+import { RecoveryFlow } from "./recovery-flow";
 
 export function RecoveryAccountView() {
   return (
-    <ComingSoon
-      title="Recuperar cuenta"
-      description="Disponible con la feature de cuentas e identidad (001)."
-    />
+    <AuthShell>
+      <RecoveryFlow />
+    </AuthShell>
   );
 }
