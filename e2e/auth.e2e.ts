@@ -1,6 +1,6 @@
 import AxeBuilder from "@axe-core/playwright";
 import { expect, test } from "@playwright/test";
-import { AFTER_SIGNUP, apiAvailable, PASSWORD, signup, uniqueEmail } from "./helpers";
+import { AFTER_SIGNUP, apiAvailable, signin, signup, uniqueEmail, VERIFY_EMAIL_URL } from "./helpers";
 
 test.describe("sin API", () => {
   test("el registro valida en el navegador y lleva el foco al primer error", async ({ page }) => {
@@ -46,7 +46,23 @@ test.describe("sin API", () => {
     await expect(page).toHaveURL(/\/auth\/signin\?next=%2Fdashboard/);
   });
 
-  for (const path of ["/auth/signin", "/auth/signup"]) {
+  test("confirmar el correo y el segundo paso piden sesión", async ({ page }) => {
+    for (const path of ["/auth/verify-email", "/auth/two-factor"]) {
+      await page.goto(path);
+      await expect(page).toHaveURL(/\/auth\/signin\?next=/);
+    }
+  });
+
+  test("recuperar la contraseña valida el correo en el navegador", async ({ page }) => {
+    await page.goto("/auth/signin");
+    await page.getByRole("link", { name: "¿Olvidaste tu contraseña?" }).click();
+    await expect(page.getByRole("heading", { name: "Recupera tu cuenta" })).toBeVisible();
+    await page.getByRole("button", { name: "Enviarme el código" }).click();
+    await expect(page.getByText("Escribe tu correo.")).toBeVisible();
+    await expect(page.getByLabel("Correo electrónico")).toBeFocused();
+  });
+
+  for (const path of ["/auth/signin", "/auth/signup", "/auth/recovery-account"]) {
     test(`${path} no tiene problemas de accesibilidad detectables`, async ({ page }) => {
       await page.goto(path);
       const { violations } = await new AxeBuilder({ page }).analyze();
@@ -63,9 +79,10 @@ test.describe("con API", () => {
   test("registro, cierre de sesión e inicio de sesión", async ({ page, context }) => {
     const email = uniqueEmail();
     await signup(page, email);
-    await expect(page).toHaveURL(/\/dashboard$/, AFTER_SIGNUP);
+    await expect(page).toHaveURL(VERIFY_EMAIL_URL, AFTER_SIGNUP);
+    await page.getByRole("link", { name: "Ir a mi panel" }).click();
     await expect(page.getByRole("heading", { name: "Hola, Ana" })).toBeVisible();
-    await expect(page.getByText("Confirma tu correo")).toBeVisible();
+    await expect(page.getByRole("link", { name: "Confirmar mi correo" })).toBeVisible();
 
     // El token vive solo en una cookie httpOnly.
     const [cookie] = (await context.cookies()).filter((c) => c.name === "qatu_session");
@@ -76,17 +93,14 @@ test.describe("con API", () => {
     await expect(page).toHaveURL(/\/$/);
     expect((await context.cookies()).some((c) => c.name === "qatu_session")).toBe(false);
 
-    await page.goto("/auth/signin");
-    await page.getByLabel("Correo").fill(email);
-    await page.getByLabel("Contraseña", { exact: true }).fill(PASSWORD);
-    await page.getByRole("button", { name: "Iniciar sesión" }).click();
+    await signin(page, email);
     await expect(page.getByRole("heading", { name: "Hola, Ana" })).toBeVisible();
   });
 
   test("un correo ya registrado se marca en su campo", async ({ page, context }) => {
     const email = uniqueEmail();
     await signup(page, email);
-    await expect(page).toHaveURL(/\/dashboard$/, AFTER_SIGNUP);
+    await expect(page).toHaveURL(VERIFY_EMAIL_URL, AFTER_SIGNUP);
     await context.clearCookies();
 
     await signup(page, email);
