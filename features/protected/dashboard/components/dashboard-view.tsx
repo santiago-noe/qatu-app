@@ -1,10 +1,11 @@
-import { CircleAlert, CircleCheck } from "lucide-react";
+import Link from "next/link";
+import { CircleAlert, CircleCheck, ShieldCheck } from "lucide-react";
 import { Container } from "@/components/layout/container";
-import { Logo } from "@/components/layout/logo";
+import { Button } from "@/components/ui/button";
 import type { ApiUser } from "@/lib/api";
 import { ROUTES } from "@/lib/session";
-import { LogoutButton } from "@/features/auth/shared/components/logout-button";
 import { TextLink } from "@/features/auth/shared/components/text-link";
+import { PANEL_ACTION, PANEL_LABEL, PanelHeader } from "@/features/protected/shared/components/panel-header";
 
 interface DashboardViewProps {
   user: ApiUser;
@@ -18,12 +19,16 @@ export function DashboardView({ user, children }: DashboardViewProps) {
 
   return (
     <div className="min-h-screen bg-bg-soft">
-      <header className="border-b border-line bg-bg">
-        <Container size="wide" className="flex h-16 items-center justify-between gap-4">
-          <Logo priority />
-          <LogoutButton className="h-10 rounded-[var(--radius-control)]" />
-        </Container>
-      </header>
+      <PanelHeader>
+        {user.roles.includes("admin") && (
+          <Button asChild variant="outline" className={PANEL_ACTION}>
+            <Link href={ROUTES.admin}>
+              <ShieldCheck strokeWidth={1.5} aria-hidden />
+              <span className={PANEL_LABEL}>Administración</span>
+            </Link>
+          </Button>
+        )}
+      </PanelHeader>
 
       <main>
         <Container className="py-10 sm:py-14">
