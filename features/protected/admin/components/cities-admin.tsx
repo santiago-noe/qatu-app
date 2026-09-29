@@ -1,6 +1,7 @@
 "use client";
 
 import { MapPin } from "lucide-react";
+import { IconBadge } from "@/components/layout/icon-badge";
 import { Button } from "@/components/ui/button";
 import type { ApiAdminCity } from "@/lib/api";
 import { useAdminAction } from "@/features/protected/admin/lib/use-admin-action";
@@ -27,8 +28,11 @@ export function CitiesAdmin({ cities }: { cities: ApiAdminCity[] }) {
       <ActionStatus alert={alert} notice={notice} />
       <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
         {cities.map((city) => (
-          <li key={city.id} className="flex items-center gap-3 rounded-[var(--radius-card)] border border-line bg-bg p-4">
-            <MapPin className="size-5 shrink-0 text-ink-2" strokeWidth={1.5} aria-hidden />
+          <li
+            key={city.id}
+            className="flex flex-wrap items-center gap-3 rounded-[var(--radius-card)] border border-line bg-bg p-4 shadow-[var(--shadow-card)]"
+          >
+            <IconBadge icon={MapPin} size="sm" />
             <div className="min-w-0 flex-1">
               <p className="font-medium">{city.name}</p>
               <p className="text-sm text-ink-2">{city.region}</p>
