@@ -15,6 +15,11 @@ export async function authedGet<T>(path: string, returnTo: string = ROUTES.dashb
 
   const res = await backendFetch(path, {}, { token });
   if (res.status === 401) redirect(withNext("/api/auth/expired", returnTo));
+  if (res.status === 403) {
+    // Rutas internas: sin el segundo paso se pide el código; sin el rol, no hay acceso.
+    const body = (await res.json().catch(() => null)) as { error?: string } | null;
+    redirect(body?.error === "dos_pasos_requerido" ? withNext(ROUTES.twoFactor, returnTo) : ROUTES.unauthorized);
+  }
   if (!res.ok) throw new Error(`qatu-api GET ${path} respondió ${res.status}`);
   return res.json() as Promise<T>;
 }
