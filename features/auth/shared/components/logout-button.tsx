@@ -7,8 +7,14 @@ import { Button } from "@/components/ui/button";
 import { ROUTES } from "@/lib/session";
 import { callBff } from "@/lib/bff-client";
 
+interface LogoutButtonProps {
+  className?: string;
+  /** Clases del texto: "max-sm:sr-only" deja solo el ícono en el celular (el lector lo sigue leyendo). */
+  labelClassName?: string;
+}
+
 // Cierra la sesión en este dispositivo. El BFF borra la cookie aunque el API no responda.
-export function LogoutButton({ className }: { className?: string }) {
+export function LogoutButton({ className, labelClassName }: LogoutButtonProps) {
   const router = useRouter();
   const [pending, setPending] = useState(false);
 
@@ -28,7 +34,7 @@ export function LogoutButton({ className }: { className?: string }) {
       className={className ?? "h-11 rounded-[var(--radius-control)]"}
     >
       <LogOut strokeWidth={1.5} aria-hidden />
-      {pending ? "Cerrando sesión…" : "Cerrar sesión"}
+      <span className={labelClassName}>{pending ? "Cerrando sesión…" : "Cerrar sesión"}</span>
     </Button>
   );
 }
