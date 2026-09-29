@@ -5,14 +5,15 @@ import { requireAdminAccess } from "@/features/protected/admin/lib/admin-data";
 
 export const metadata: Metadata = { title: "Usuarios · Administración" };
 
-export default async function Page() {
+export default async function Page({ searchParams }: PageProps<"/admin/usuarios">) {
+  const { email } = await searchParams;
   await requireAdminAccess("/admin/usuarios");
   return (
     <AdminPage
       title="Usuarios"
       description="Busca una cuenta por su correo para asignar roles internos o suspenderla. Cada cambio queda en la auditoría."
     >
-      <UserAdmin />
+      <UserAdmin initialEmail={typeof email === "string" ? email : undefined} />
     </AdminPage>
   );
 }
