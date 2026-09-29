@@ -11,6 +11,7 @@ export const ROUTES = {
   verifyEmail: "/auth/verify-email",
   twoFactor: "/auth/two-factor",
   dashboard: "/dashboard",
+  admin: "/admin",
   unauthorized: "/unauthorized",
   terms: "/terminos",
   privacy: "/privacidad",
