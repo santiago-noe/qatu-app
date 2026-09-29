@@ -104,7 +104,7 @@ test.describe("con API", () => {
     await context.clearCookies();
 
     await signup(page, email);
-    await expect(page.getByText("el correo ya está registrado")).toBeVisible();
+    await expect(page.getByText("el correo ya está registrado")).toBeVisible(AFTER_SIGNUP);
     await expect(page.getByLabel("Correo")).toBeFocused();
   });
 
