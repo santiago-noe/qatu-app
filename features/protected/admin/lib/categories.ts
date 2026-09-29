@@ -89,3 +89,29 @@ export function flattenTree(roots: ApiAdminCategory[]): { category: ApiAdminCate
     ...(root.children ?? []).map((child) => ({ category: child, depth: 1 as const })),
   ]);
 }
+
+export type TreeFilter = "all" | "on" | "off" | "prohibited";
+
+export const TREE_FILTERS: { value: TreeFilter; label: string }[] = [
+  { value: "all", label: "Todas" },
+  { value: "on", label: "Activas" },
+  { value: "off", label: "Apagadas" },
+  { value: "prohibited", label: "Prohibidas" },
+];
+
+const MATCHES: Record<TreeFilter, (c: ApiAdminCategory) => boolean> = {
+  all: () => true,
+  on: (c) => c.enabled,
+  off: (c) => !c.enabled,
+  prohibited: (c) => c.prohibited,
+};
+
+/** Árbol filtrado: una raíz queda si cumple o si alguno de sus tipos cumple (para verlo en contexto). */
+export function filterTree(roots: ApiAdminCategory[], filter: TreeFilter): ApiAdminCategory[] {
+  if (filter === "all") return roots;
+  const match = MATCHES[filter];
+  return roots.flatMap((root) => {
+    const children = (root.children ?? []).filter(match);
+    return match(root) || children.length > 0 ? [{ ...root, children }] : [];
+  });
+}

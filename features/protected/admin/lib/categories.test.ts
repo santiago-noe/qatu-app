@@ -2,6 +2,7 @@ import { describe, expect, test } from "bun:test";
 import type { ApiAdminCategory } from "@/lib/api";
 import {
   categoryFieldForError,
+  filterTree,
   flattenTree,
   parentOptions,
   parseSchema,
@@ -63,4 +64,12 @@ test("los errores de qatu-api van a su campo", () => {
   expect(categoryFieldForError("arbol_invalido")).toBe("parent_id");
   expect(categoryFieldForError("sin_permiso")).toBeUndefined();
   expect(categoryFieldForError("__proto__")).toBeUndefined();
+});
+
+test("filterTree deja la raíz como contexto de sus tipos", () => {
+  const off = (c: ApiAdminCategory) => ({ ...c, enabled: false });
+  const roots = [cat("a", [off(cat("a1")), cat("a2")]), off(cat("b")), cat("c")];
+  expect(filterTree(roots, "all")).toBe(roots);
+  expect(filterTree(roots, "off").map((r) => `${r.id}:${r.children?.map((c) => c.id).join()}`)).toEqual(["a:a1", "b:"]);
+  expect(filterTree(roots, "prohibited")).toEqual([]);
 });
