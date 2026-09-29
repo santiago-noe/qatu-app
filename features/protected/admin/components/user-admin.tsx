@@ -1,8 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useEffectEvent, useState } from "react";
 import { Mail, Search } from "lucide-react";
-import { CheckboxField } from "@/components/form/checkbox-field";
 import { TextareaField } from "@/components/form/textarea-field";
 import { TextField } from "@/components/form/text-field";
 import { Button } from "@/components/ui/button";
@@ -12,24 +11,34 @@ import { INTERNAL_ROLES, roleLabel, rolesDiff } from "@/features/protected/admin
 import { useAdminAction } from "@/features/protected/admin/lib/use-admin-action";
 import { ActionStatus } from "./action-status";
 import { Badge } from "./badge";
+import { UserAvatar } from "./user-avatar";
 
 // Buscar una cuenta por su correo exacto (no hay listado masivo: datos mínimos, Ley 29733),
 // asignar roles internos y suspender o reactivar. Cada cambio cierra las sesiones de esa persona.
-export function UserAdmin() {
+// initialEmail: correo que llega del buscador de la barra superior (?email=); se busca al abrir.
+export function UserAdmin({ initialEmail }: { initialEmail?: string }) {
   const { run, pending, alert, notice, setAlert } = useAdminAction();
   const [user, setUser] = useState<ApiAdminUser | null>(null);
   const [emailError, setEmailError] = useState<string>();
   const [reasonError, setReasonError] = useState<string>();
 
-  async function search(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault();
-    const email = String(new FormData(e.currentTarget).get("email") ?? "").trim();
+  const find = useEffectEvent(async (raw: string) => {
+    const email = raw.trim();
     setEmailError(validateEmail(email));
     if (validateEmail(email)) return;
     setUser(null);
     const result = await run<ApiAdminUser>(`/users?email=${encodeURIComponent(email)}`);
     if (result.ok) setUser(result.data);
     else if (result.error.error === "no_encontrado") setAlert("No hay ninguna cuenta con ese correo.");
+  });
+
+  useEffect(() => {
+    if (initialEmail) find(initialEmail);
+  }, [initialEmail]);
+
+  function search(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    find(String(new FormData(e.currentTarget).get("email") ?? ""));
   }
 
   async function saveRoles(e: React.FormEvent<HTMLFormElement>) {
@@ -71,7 +80,8 @@ export function UserAdmin() {
 
   return (
     <div className="flex max-w-3xl flex-col gap-4">
-      <form onSubmit={search} noValidate role="search" className="flex flex-col gap-3 sm:flex-row sm:items-start">
+      {/* key: si llega otro correo desde la barra superior, el campo lo muestra */}
+      <form key={initialEmail} onSubmit={search} noValidate role="search" aria-label="Buscar cuenta" className="flex flex-col gap-3 sm:flex-row sm:items-start">
         <TextField
           label="Correo de la cuenta"
           icon={Mail}
@@ -80,6 +90,7 @@ export function UserAdmin() {
           inputMode="email"
           autoComplete="off"
           placeholder="nombre@correo.pe"
+          defaultValue={initialEmail}
           className="flex-1"
           error={emailError}
         />
@@ -92,8 +103,12 @@ export function UserAdmin() {
       <ActionStatus alert={alert} notice={notice} />
 
       {user && (
-        <section aria-labelledby="cuenta-encontrada" className="rounded-[var(--radius-card)] border border-line bg-bg p-4 sm:p-5">
+        <section
+          aria-labelledby="cuenta-encontrada"
+          className="rounded-[var(--radius-card)] border border-line bg-bg p-4 shadow-[var(--shadow-card)] sm:p-5"
+        >
           <div className="flex flex-wrap items-start gap-3">
+            <UserAvatar name={user.name} size="md" />
             <div className="min-w-0 flex-1">
               <h2 id="cuenta-encontrada" className="text-lg font-semibold">
                 {user.name}
@@ -118,11 +133,21 @@ export function UserAdmin() {
             <fieldset>
               <legend className="text-sm font-semibold">Roles internos</legend>
               <p className="text-xs text-ink-3">Piden el código de dos pasos al iniciar sesión.</p>
-              <div className="mt-3 flex flex-col gap-2 sm:flex-row sm:gap-6">
+              <div className="mt-3 flex flex-wrap gap-2">
                 {INTERNAL_ROLES.map((role) => (
-                  <CheckboxField key={role} name={role} defaultChecked={user.roles.includes(role)}>
+                  // Ficha que se marca: la casilla nativa sigue ahí (teclado, lector de pantalla, FormData).
+                  <label
+                    key={role}
+                    className="flex h-10 cursor-pointer items-center gap-2 rounded-full border border-line bg-bg px-4 text-sm font-medium text-ink-2 transition-colors hover:text-ink has-[:checked]:border-ink has-[:checked]:bg-ink has-[:checked]:text-white"
+                  >
+                    <input
+                      type="checkbox"
+                      name={role}
+                      defaultChecked={user.roles.includes(role)}
+                      className="size-4 cursor-pointer accent-brand"
+                    />
                     {roleLabel(role)}
-                  </CheckboxField>
+                  </label>
                 ))}
               </div>
             </fieldset>
