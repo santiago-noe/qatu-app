@@ -11,5 +11,5 @@ export const metadata: Metadata = { robots: { index: false, follow: false } };
 export default async function AdminLayout({ children }: LayoutProps<"/admin">) {
   const user = await getCurrentUser(ROUTES.admin);
   if (!user.roles.includes("admin")) redirect(ROUTES.unauthorized);
-  return <AdminShell>{children}</AdminShell>;
+  return <AdminShell name={user.name}>{children}</AdminShell>;
 }

@@ -1,32 +1,17 @@
-import Link from "next/link";
-import { LayoutDashboard } from "lucide-react";
-import { Container } from "@/components/layout/container";
-import { Button } from "@/components/ui/button";
-import { ROUTES } from "@/lib/session";
-import { PANEL_ACTION, PANEL_LABEL, PanelHeader } from "@/features/protected/shared/components/panel-header";
-import { AdminNav } from "./admin-nav";
+import { AdminSidebarContent } from "./admin-sidebar";
+import { AdminTopbar } from "./admin-topbar";
 
-// Marco del panel admin: cabecera, pestañas de secciones y el contenido de cada página.
-export function AdminShell({ children }: { children: React.ReactNode }) {
+// Marco del panel admin: barra lateral fija (escritorio) o menú (celular), barra superior y contenido.
+export function AdminShell({ name, children }: { name: string; children: React.ReactNode }) {
   return (
-    <div className="min-h-screen bg-bg-soft">
-      <PanelHeader>
-        <Button asChild variant="outline" className={PANEL_ACTION}>
-          <Link href={ROUTES.dashboard}>
-            <LayoutDashboard strokeWidth={1.5} aria-hidden />
-            <span className={PANEL_LABEL}>Mi panel</span>
-          </Link>
-        </Button>
-      </PanelHeader>
-      <main>
-        <Container size="wide" className="py-8 sm:py-10">
-          <p className="eyebrow">Administración</p>
-          <div className="mt-3">
-            <AdminNav />
-          </div>
-          <div className="mt-6">{children}</div>
-        </Container>
-      </main>
+    <div className="min-h-screen bg-bg-soft lg:grid lg:grid-cols-[260px_minmax(0,1fr)]">
+      <aside className="sticky top-0 hidden h-screen border-r border-line bg-bg lg:block">
+        <AdminSidebarContent />
+      </aside>
+      <div className="min-w-0">
+        <AdminTopbar name={name} menu={<AdminSidebarContent />} />
+        <main className="mx-auto max-w-[1400px] px-4 py-6 sm:px-6 lg:px-8 lg:py-8">{children}</main>
+      </div>
     </div>
   );
 }
@@ -34,17 +19,24 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
 interface AdminPageProps {
   title: string;
   description: string;
+  /** Acción principal a la derecha del título ("Nueva categoría"). */
+  action?: React.ReactNode;
   children: React.ReactNode;
 }
 
 // Encabezado de cada sección (un solo h1 por página).
-export function AdminPage({ title, description, children }: AdminPageProps) {
+export function AdminPage({ title, description, action, children }: AdminPageProps) {
   return (
     <section aria-labelledby="admin-titulo">
-      <h1 id="admin-titulo" className="text-2xl font-semibold tracking-tight">
-        {title}
-      </h1>
-      <p className="mt-1.5 max-w-2xl text-ink-2">{description}</p>
+      <div className="flex flex-wrap items-end justify-between gap-4">
+        <div className="min-w-0">
+          <h1 id="admin-titulo" className="text-2xl font-semibold tracking-tight sm:text-[28px]">
+            {title}
+          </h1>
+          <p className="mt-1.5 max-w-2xl text-ink-2">{description}</p>
+        </div>
+        {action}
+      </div>
       <div className="mt-6">{children}</div>
     </section>
   );
