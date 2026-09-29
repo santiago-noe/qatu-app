@@ -2,7 +2,7 @@ import { NextResponse, type NextRequest } from "next/server";
 import { NEXT_PARAM, ROUTES, SESSION_COOKIE } from "@/lib/session";
 
 // Confirmar el correo y el segundo paso actúan sobre la sesión: sin ella no hay nada que confirmar.
-const PROTECTED_PREFIXES = [ROUTES.dashboard, ROUTES.verifyEmail, ROUTES.twoFactor];
+const PROTECTED_PREFIXES = [ROUTES.dashboard, ROUTES.admin, ROUTES.verifyEmail, ROUTES.twoFactor];
 const GUEST_ONLY_PREFIXES = [
   ROUTES.signin,
   ROUTES.signup,
@@ -33,5 +33,5 @@ export function proxy(req: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/", "/dashboard/:path*", "/auth/:path*"],
+  matcher: ["/", "/dashboard/:path*", "/admin/:path*", "/auth/:path*"],
 };
