@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { History, Plus } from "lucide-react";
+import { History, Percent, Plus } from "lucide-react";
+import { IconBadge } from "@/components/layout/icon-badge";
 import { Button } from "@/components/ui/button";
 import type { ApiAdminCategory, ApiAdminCity, ApiSetting, ApiSettingChange, Vertical } from "@/lib/api";
 import { flattenTree } from "@/features/protected/admin/lib/categories";
@@ -22,7 +23,7 @@ interface SettingsAdminProps {
 // categoría (gana el más específico). Cada cambio queda en el historial y solo afecta lo nuevo.
 export function SettingsAdmin({ settings, cities, categories, meId }: SettingsAdminProps) {
   return (
-    <div className="grid items-start gap-4 lg:grid-cols-2">
+    <div className="grid grid-cols-1 items-start gap-4 lg:grid-cols-2">
       {SETTINGS.map((info) => (
         <SettingCard
           key={info.key}
@@ -80,11 +81,19 @@ function SettingCard({ info, values, cities, categories, meId }: SettingCardProp
   const scopeOf = (s: ApiSetting): Scope => ({ city: cityById(s.city_id)?.slug ?? "", categoryId: s.category_id ?? "" });
 
   return (
-    <section aria-labelledby={`ajuste-${info.key}`} className="rounded-[var(--radius-card)] border border-line bg-bg p-4 sm:p-5">
-      <h2 id={`ajuste-${info.key}`} className="text-base font-semibold">
-        {info.label}
-      </h2>
-      <p className="font-mono text-xs text-ink-3">{info.key}</p>
+    <section
+      aria-labelledby={`ajuste-${info.key}`}
+      className="rounded-[var(--radius-card)] border border-line bg-bg p-4 shadow-[var(--shadow-card)] sm:p-5"
+    >
+      <div className="flex items-start gap-3">
+        <IconBadge icon={Percent} size="sm" />
+        <div className="min-w-0">
+          <h2 id={`ajuste-${info.key}`} className="text-base font-semibold">
+            {info.label}
+          </h2>
+          <p className="break-all font-mono text-xs text-ink-3">{info.key}</p>
+        </div>
+      </div>
 
       <div className="mt-3">
         <ActionStatus alert={alert} notice={notice} />
@@ -97,7 +106,7 @@ function SettingCard({ info, values, cities, categories, meId }: SettingCardProp
             <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
               <div className="min-w-0 flex-1">
                 <p className="text-sm text-ink-2">{label}</p>
-                <p className="text-xl font-semibold tabular-nums">{formatBps(setting.value)}</p>
+                <p className="text-3xl font-bold tabular-nums tracking-tight">{formatBps(setting.value)}</p>
                 <p className="text-xs text-ink-3">
                   Versión {setting.version} · {formatWhen(setting.updated_at)}
                 </p>
@@ -160,21 +169,28 @@ function SettingCard({ info, values, cities, categories, meId }: SettingCardProp
           {history.length === 0 ? (
             <p className="mt-1 text-sm text-ink-2">Sin cambios registrados.</p>
           ) : (
-            <ol className="mt-2 flex flex-col gap-2 text-sm">
-              {history.map((change, i) => (
-                <li key={`${change.at}-${i}`} className="rounded-[var(--radius-control)] bg-bg-soft px-3 py-2">
-                  <p className="font-medium tabular-nums">
-                    {change.before ? `${formatBps(change.before.value)} → ` : "Creado: "}
-                    {formatBps(change.after.value)}
-                  </p>
-                  <p className="text-xs text-ink-2">
-                    {scopeLabel(cityBySlug(change.after.city)?.name, categoryName(change.after.category_id))} ·{" "}
-                    {change.actor_id === meId ? "Tú" : change.actor_id ? "Otro administrador" : "Sistema"} ·{" "}
-                    {formatWhen(change.at)}
-                  </p>
-                </li>
-              ))}
-            </ol>
+            // El scroll va en un contenedor (con foco, para recorrerlo con el teclado): así los puntos
+            // de la línea de tiempo no se recortan.
+            <div tabIndex={0} role="region" aria-label={`Historial de ${info.label}`} className="mt-3 max-h-80 overflow-y-auto">
+              <ol className="ml-1.5 flex flex-col gap-3 border-l border-line pl-4 pr-1 text-sm">
+                {history.map((change, i) => (
+                  <li
+                    key={`${change.at}-${i}`}
+                    className="relative before:absolute before:-left-[21px] before:top-1.5 before:size-2.5 before:rounded-full before:border-2 before:border-bg before:bg-brand-text"
+                  >
+                    <p className="font-medium tabular-nums">
+                      {change.before ? `${formatBps(change.before.value)} → ` : "Creado: "}
+                      {formatBps(change.after.value)}
+                    </p>
+                    <p className="text-xs text-ink-2">
+                      {scopeLabel(cityBySlug(change.after.city)?.name, categoryName(change.after.category_id))} ·{" "}
+                      {change.actor_id === meId ? "Tú" : change.actor_id ? "Otro administrador" : "Sistema"} ·{" "}
+                      {formatWhen(change.at)}
+                    </p>
+                  </li>
+                ))}
+              </ol>
+            </div>
           )}
         </div>
       )}
