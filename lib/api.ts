@@ -92,3 +92,59 @@ export interface ApiCategory {
   attributes_schema?: unknown;
   children?: ApiCategory[];
 }
+
+export type RiskLevel = ApiCategory["risk_level"];
+export type Vertical = "rental" | "service";
+
+/** Categoría vista por el admin (GET /admin/catalog/categories): incluye lo apagado y lo prohibido. */
+export interface ApiAdminCategory {
+  id: string;
+  vertical: Vertical;
+  parent_id?: string;
+  slug: string;
+  name: string;
+  description?: string;
+  icon?: string;
+  sort_order: number;
+  attributes_schema: unknown;
+  risk_level: RiskLevel;
+  prohibited: boolean;
+  enabled: boolean;
+  children?: ApiAdminCategory[];
+}
+
+/** Ciudad vista por el admin (GET /admin/cities): incluye las apagadas. */
+export interface ApiAdminCity {
+  id: string;
+  slug: string;
+  name: string;
+  region: string;
+  enabled: boolean;
+}
+
+/** Valor de platform_settings en su alcance (sin ciudad ni categoría = global). */
+export interface ApiSetting {
+  id: string;
+  key: string;
+  city_id?: string;
+  category_id?: string;
+  /** Comisiones en puntos básicos: 1000 = 10 %. */
+  value: number;
+  description?: string;
+  updated_by?: string;
+  updated_at: string;
+  version: number;
+}
+
+/** Cambio de un ajuste (GET /admin/settings/{key}/history). before es null al crearlo. */
+export interface ApiSettingChange {
+  at: string;
+  actor_id?: string;
+  before: { value: number; city?: string; category_id?: string } | null;
+  after: { value: number; city?: string; category_id?: string };
+}
+
+/** Usuario visto por el admin: además, el motivo de suspensión. */
+export interface ApiAdminUser extends ApiUser {
+  suspended_reason?: string;
+}
