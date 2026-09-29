@@ -21,6 +21,7 @@ import {
   type CategoryField,
 } from "@/features/protected/admin/lib/categories";
 import { useAdminAction } from "@/features/protected/admin/lib/use-admin-action";
+import { cn } from "@/lib/utils";
 
 const EMPTY_SCHEMA = { type: "object", properties: {} };
 
@@ -42,10 +43,11 @@ interface CategoryFormProps {
   parentId?: string;
   onDone(): void;
   onCancel(): void;
+  className?: string;
 }
 
 // Crear o editar una categoría (o un oficio). El identificador se sugiere del nombre al crear.
-export function CategoryForm({ vertical, roots, category, parentId, onDone, onCancel }: CategoryFormProps) {
+export function CategoryForm({ vertical, roots, category, parentId, onDone, onCancel, className }: CategoryFormProps) {
   const { run, pending, alert, setAlert } = useAdminAction();
   const formRef = useRef<HTMLFormElement>(null);
   const [errors, setErrors] = useState<Partial<Record<CategoryField, string>>>({});
@@ -104,10 +106,11 @@ export function CategoryForm({ vertical, roots, category, parentId, onDone, onCa
       ref={formRef}
       onSubmit={onSubmit}
       noValidate
-      className="flex flex-col gap-4 rounded-[var(--radius-card)] border border-line bg-bg-soft p-4 sm:p-5"
+      // @container: las columnas dependen del ancho del formulario (panel lateral o dentro de la lista).
+      className={cn("@container flex flex-col gap-4", className)}
     >
       <FormAlert>{alert}</FormAlert>
-      <div className="grid gap-4 sm:grid-cols-2">
+      <div className="grid gap-4 @sm:grid-cols-2">
         <TextField
           label="Nombre"
           name="name"
@@ -141,7 +144,7 @@ export function CategoryForm({ vertical, roots, category, parentId, onDone, onCa
         rows={2}
         error={errors.description}
       />
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-4 @xs:grid-cols-2 @3xl:grid-cols-4">
         <SelectField
           label="Pertenece a"
           name="parent_id"
@@ -170,7 +173,7 @@ export function CategoryForm({ vertical, roots, category, parentId, onDone, onCa
       {hasChildren && (
         <p className="-mt-2 text-xs text-ink-3">Tiene tipos dentro: sigue siendo principal (el catálogo tiene 2 niveles).</p>
       )}
-      <div className="flex flex-col gap-2 sm:flex-row sm:gap-6">
+      <div className="flex flex-col gap-2 @lg:flex-row @lg:gap-6">
         <CheckboxField name="enabled" defaultChecked={category?.enabled ?? true}>
           Activa: se muestra en el catálogo
         </CheckboxField>
