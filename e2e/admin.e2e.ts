@@ -42,12 +42,16 @@ test.afterAll(async () => {
 const noViolations = async () => expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
 
 test("se entra desde el panel y cada sección es accesible", async () => {
+  test.setTimeout(90_000); // axe en 6 páginas
   await page.getByRole("link", { name: "Administración" }).click();
-  await expect(page).toHaveURL(/\/admin\/categorias$/);
-  await expect(page.getByRole("heading", { level: 1, name: "Categorías de herramientas" })).toBeVisible();
+  await expect(page).toHaveURL(/\/admin$/);
+  // Portada: saludo según la hora de Lima y cifras reales del catálogo.
+  await expect(page.getByRole("heading", { level: 1, name: /^(Buenos días|Buenas tardes|Buenas noches), Ana/ })).toBeVisible();
+  await expect(page.getByRole("region", { name: "Comisiones vigentes" })).toContainText("Comisión al arrendador");
   await noViolations();
 
   for (const [tab, heading] of [
+    ["Categorías", "Categorías de herramientas"],
     ["Oficios", "Oficios"],
     ["Comisiones", "Comisiones y tarifas"],
     ["Ciudades", "Ciudades"],
@@ -64,7 +68,14 @@ test("crear, editar y validar una categoría", async () => {
   await page.goto("/admin/categorias");
   const name = `E2E Taladros ${Date.now()}`;
 
+  // El filtro deja solo lo que coincide (Construcción está activa, no apagada).
+  await page.getByRole("button", { name: "Apagadas" }).click();
+  await expect(page.getByText("construccion", { exact: true })).toHaveCount(0);
+  await page.getByRole("button", { name: "Todas" }).click();
+
+  // En escritorio el formulario se abre en el panel lateral.
   await page.getByRole("button", { name: "Nueva categoría" }).click();
+  await expect(page.getByRole("complementary", { name: "Nueva categoría" })).toBeVisible();
   await page.getByLabel("Nombre").fill(name);
   // El identificador se sugiere del nombre.
   await expect(page.getByLabel("Identificador")).toHaveValue(/^e2e-taladros-\d+$/);
@@ -97,7 +108,7 @@ test("crear, editar y validar una categoría", async () => {
 
 test("cambiar una comisión y verla en el historial", async () => {
   await page.goto("/admin/comisiones");
-  const card = page.getByRole("region", { name: "Comisión al arrendador" });
+  const card = page.getByRole("region", { name: "Comisión al arrendador", exact: true });
   const general = card.getByRole("listitem").filter({ hasText: "General" });
   const original = (await general.getByText(/^\d+(\.\d+)? %$/).textContent())!.replace(" %", "");
 
@@ -137,7 +148,13 @@ test("buscar una cuenta, darle un rol interno y suspenderla", async ({ browser }
   await expect(other).toHaveURL(VERIFY_EMAIL_URL, AFTER_SIGNUP);
   await other.close();
 
-  await page.goto("/admin/usuarios");
+  // Búsqueda rápida de la barra superior: lleva a Usuarios con la cuenta ya buscada.
+  await page.goto("/admin");
+  await page.getByRole("search", { name: "Búsqueda rápida" }).getByRole("textbox").fill(email);
+  await page.keyboard.press("Enter");
+  await expect(page).toHaveURL(/\/admin\/usuarios\?email=/);
+  await expect(page.getByRole("region", { name: "Ana Quispe" }).getByText(email)).toBeVisible();
+
   await page.getByLabel("Correo de la cuenta").fill("nadie-existe@qatu.pe");
   await page.getByRole("button", { name: "Buscar" }).click();
   await expect(page.getByRole("alert").filter({ hasText: "No hay ninguna cuenta con ese correo." })).toBeVisible();
