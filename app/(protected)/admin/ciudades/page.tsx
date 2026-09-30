@@ -10,7 +10,7 @@ export default async function Page() {
   return (
     <AdminPage
       title="Ciudades"
-      description="Encender o apagar una ciudad cambia lo que ve el público al instante. Una ciudad nueva se agrega con los límites oficiales de sus distritos."
+      description="Encender o apagar una ciudad cambia lo que ve el público al instante. Una ciudad nueva nace apagada: agrégale sus distritos con su límite oficial y después enciéndela."
     >
       <CitiesAdmin cities={cities} />
     </AdminPage>
