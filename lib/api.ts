@@ -253,3 +253,20 @@ export interface ApiDepositSuggestion {
   min: number;
   max: number;
 }
+
+/** Foto de una publicación (GET /me/listings/{id}/photos). urls por ancho: "320", "800", "1600". */
+export interface ApiPhoto {
+  id: string;
+  kind: "public" | "serial";
+  status: "pending" | "ready" | "failed";
+  width?: number;
+  height?: number;
+  sort_order: number;
+  urls: Record<string, string>;
+}
+
+/** Subida directa al almacenamiento (POST /me/listings/{id}/photos). */
+export interface ApiPhotoUpload {
+  photo: ApiPhoto;
+  upload: { method: "PUT"; url: string; headers: Record<string, string>; expires_at: string };
+}
