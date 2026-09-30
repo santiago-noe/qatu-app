@@ -180,3 +180,76 @@ export interface ApiSettingChange {
 export interface ApiAdminUser extends ApiUser {
   suspended_reason?: string;
 }
+
+/** Lugar resuelto (ciudad o distrito) dentro de otra respuesta. */
+export interface ApiPlaceRef {
+  id: string;
+  slug: string;
+  name: string;
+}
+
+/** Perfil de arrendador (GET/PUT /me/lender). El celular solo lo ve su dueño. */
+export interface ApiLender {
+  kind: "person" | "business";
+  business_name?: string;
+  phone: string;
+  city: ApiPlaceRef;
+  zone: ApiPlaceRef;
+}
+
+export type ListingStatus = "draft" | "in_review" | "published" | "paused" | "rejected" | "archived";
+
+/** Precios en céntimos; 0 = esa modalidad no se ofrece. */
+export interface ApiPrices {
+  hour: number;
+  day: number;
+  weekend: number;
+  week: number;
+  month: number;
+}
+
+/** Formulario del asistente de publicación (lo que el arrendador edita). Montos en céntimos. */
+export interface ApiListingFields {
+  category_id: string;
+  title: string;
+  description: string;
+  attributes: Record<string, unknown>;
+  replacement_value: number;
+  deposit: number;
+  prices: ApiPrices;
+  accessories: string[];
+  usage_instructions: string;
+  pickup_enabled: boolean;
+  pickup_location: { lat: number; lng: number } | null;
+  delivery_enabled: boolean;
+  delivery_fee: number;
+  delivery_zone_ids: string[];
+  booking_mode: "request" | "instant";
+  cancel_policy: "flexible" | "moderate" | "strict";
+  min_verification: number;
+  min_notice_hours: number;
+  min_duration_hours: number;
+  max_duration_hours: number;
+}
+
+/** Publicación del arrendador (GET /me/listings/{id}): incluye el punto exacto, solo para él. */
+export interface ApiListing extends ApiListingFields {
+  id: string;
+  city_id: string;
+  zone_id?: string;
+  public_location: { lat: number; lng: number } | null;
+  public_radius_m?: number;
+  status: ListingStatus;
+  rejection_reason?: string;
+  first_published_at?: string;
+  version: number;
+  created_at: string;
+  updated_at: string;
+}
+
+/** Garantía sugerida y su rango, en céntimos (GET /me/lender/deposit-suggestion). */
+export interface ApiDepositSuggestion {
+  suggested: number;
+  min: number;
+  max: number;
+}
