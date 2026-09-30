@@ -15,7 +15,14 @@ const cat = (id: string, extra: Partial<ApiAdminCategory> = {}): ApiAdminCategor
   ...extra,
 });
 
-const city = (slug: string, enabled: boolean): ApiAdminCity => ({ id: slug, slug, name: slug, region: "R", enabled });
+const city = (slug: string, enabled: boolean): ApiAdminCity => ({
+  id: slug,
+  slug,
+  name: slug,
+  region: "R",
+  center: { lat: -13.16, lng: -74.22 },
+  enabled,
+});
 
 const setting = (key: string, value: number, updated_at: string, scope: Partial<ApiSetting> = {}): ApiSetting => ({
   id: key + (scope.city_id ?? ""),
