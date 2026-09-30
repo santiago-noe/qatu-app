@@ -83,3 +83,9 @@
     scroll-behavior: auto;
   }
 }
+
+/* Mapas (MapLibre): los enlaces de la atribución van subrayados, no se distinguen solo por el color
+   (WCAG 1.4.1). Fuera de @layer y con más especificidad que el CSS de MapLibre, que no usa capas. */
+.maplibregl-ctrl.maplibregl-ctrl-attrib a {
+  text-decoration: underline;
+}
