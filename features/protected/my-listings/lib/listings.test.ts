@@ -1,10 +1,15 @@
 import { expect, test } from "bun:test";
 import { attributeFields, readAttributes } from "./attributes";
 import { isPeruMobile, lenderFieldForError, validateLender } from "./lender";
+import type { ApiListing } from "@/lib/api";
 import {
   centsToInput,
   findToolType,
+  formatHours,
   formatSoles,
+  hourOptions,
+  minVerificationFor,
+  publishChecklist,
   isEditable,
   listingActions,
   parseAccessories,
@@ -108,4 +113,34 @@ test("tipos de herramienta con su categoría", () => {
   expect(toolTypeOptions(roots)).toEqual([{ value: "t1", label: "Construcción · Rotomartillo" }]);
   expect(findToolType(roots, "t1")?.root.name).toBe("Construcción");
   expect(findToolType(roots, "c1")).toBeUndefined();
+});
+
+test("reglas: horas legibles y opciones con el valor guardado", () => {
+  expect([0, 1, 12, 24, 48, 168, 336, 720].map(formatHours)).toEqual([
+    "Sin antelación",
+    "1 hora",
+    "12 horas",
+    "1 día",
+    "2 días",
+    "1 semana",
+    "2 semanas",
+    "30 días",
+  ]);
+  expect(hourOptions([12, 24], 36).map((o) => o.value)).toEqual(["12", "24", "36"]);
+  expect(minVerificationFor("high")).toBe(2);
+  expect(minVerificationFor("medium")).toBe(1);
+});
+
+test("lista de lo que falta para publicar", () => {
+  const base = {
+    prices: { hour: 0, day: 0, weekend: 0, week: 0, month: 0 },
+    replacement_value: 0,
+    pickup_enabled: true,
+    pickup_location: null,
+    delivery_enabled: true,
+    delivery_zone_ids: [] as string[],
+  } as unknown as ApiListing;
+  expect(publishChecklist(base, 2).every((i) => !i.done)).toBe(true);
+  const ready = { ...base, prices: { ...base.prices, day: 3500 }, replacement_value: 45000, delivery_zone_ids: ["z1"] };
+  expect(publishChecklist(ready, 3).every((i) => i.done)).toBe(true);
 });
