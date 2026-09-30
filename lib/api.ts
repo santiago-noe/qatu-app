@@ -119,7 +119,39 @@ export interface ApiAdminCity {
   slug: string;
   name: string;
   region: string;
+  /** Ubigeo INEI de la provincia (4 dígitos). */
+  ubigeo?: string;
+  center: { lat: number; lng: number };
   enabled: boolean;
+}
+
+/** Límite de un distrito en GeoJSON (qatu-api lo guarda como MultiPolygon, longitud y latitud). */
+export interface GeoJsonMultiPolygon {
+  type: "MultiPolygon";
+  coordinates: number[][][][];
+}
+
+/** Distrito visto por el admin (GET /admin/cities/{slug}/zones): con su límite simplificado. */
+export interface ApiAdminZone {
+  id: string;
+  slug: string;
+  name: string;
+  ubigeo?: string;
+  sort_order: number;
+  enabled: boolean;
+  has_boundary: boolean;
+  boundary?: GeoJsonMultiPolygon;
+}
+
+/** Cómo está una categoría en una ciudad (GET /admin/catalog/categories/{id}/cities). */
+export interface ApiCategoryCity {
+  city: string;
+  name: string;
+  city_enabled: boolean;
+  /** null: sigue el valor global de la categoría. */
+  override: boolean | null;
+  /** Si se ofrece en la ciudad (una prohibida nunca). */
+  active: boolean;
 }
 
 /** Valor de platform_settings en su alcance (sin ciudad ni categoría = global). */
