@@ -1,6 +1,7 @@
 import { execFile } from "node:child_process";
 import { promisify } from "node:util";
-import type { Page } from "@playwright/test";
+import AxeBuilder from "@axe-core/playwright";
+import { expect, type Page } from "@playwright/test";
 
 // Utilidades compartidas por las pruebas e2e (no es un archivo de pruebas: no termina en .e2e.ts).
 
@@ -75,4 +76,13 @@ export async function signin(page: Page, email: string, password: string = PASSW
   await page.getByLabel("Correo").fill(email);
   await page.getByLabel("Contraseña", { exact: true }).fill(password);
   await page.getByRole("button", { name: "Iniciar sesión" }).click();
+}
+
+/**
+ * Sin fallas de accesibilidad (axe). Antes espera el <title>: al refrescar una página, Next lo
+ * vuelve a escribir y axe podría verlo vacío por un instante.
+ */
+export async function expectAccessible(page: Page) {
+  await expect(page).toHaveTitle(/\S/);
+  expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
 }
