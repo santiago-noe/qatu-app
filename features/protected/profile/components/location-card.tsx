@@ -6,14 +6,10 @@ import { Building2, LocateFixed, MapPin } from "lucide-react";
 import { FormAlert } from "@/components/form/form-alert";
 import { SelectField } from "@/components/form/select-field";
 import { Button } from "@/components/ui/button";
-import type { ApiCity, ApiLocation, ApiZone } from "@/lib/api";
+import type { ApiLocation } from "@/lib/api";
 import { callBff } from "@/lib/bff-client";
+import type { CityZones } from "@/lib/catalog";
 import { currentPosition } from "@/features/protected/profile/lib/geolocation";
-
-export interface CityZones {
-  city: ApiCity;
-  zones: ApiZone[];
-}
 
 interface LocationCardProps {
   cities: CityZones[];
