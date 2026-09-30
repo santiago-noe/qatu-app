@@ -190,6 +190,7 @@ test("dar de alta una ciudad con sus distritos y encenderla", async () => {
   await page.getByLabel("Límite (GeoJSON, opcional)").setInputFiles(boundaryFile("este", 0.02));
   await page.getByRole("button", { name: "Agregar distrito" }).last().click();
   await expect(page.getByRole("status").filter({ hasText: "Agregamos «Este»." })).toBeVisible();
+  await expect(page).toHaveTitle(/Distritos/); // axe revisa el <title>: se espera a que termine de refrescar
   await noViolations();
 
   await page.getByRole("button", { name: "Encender ciudad" }).click();
