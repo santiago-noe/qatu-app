@@ -32,6 +32,31 @@ export async function loadPublicCatalog(): Promise<PublicCatalog> {
   }
 }
 
+/** Una ciudad habilitada con sus distritos (para elegir distrito en formularios). */
+export interface CityZones {
+  city: ApiCity;
+  zones: ApiZone[];
+}
+
+/** Ciudades habilitadas con sus distritos activos. */
+export async function loadCitiesWithZones(): Promise<CityZones[]> {
+  const { cities } = await backendJSON<{ cities: ApiCity[] }>("/cities");
+  return Promise.all(
+    cities.map(async (city) => ({
+      city,
+      zones: (await backendJSON<{ zones: ApiZone[] }>(`/cities/${encodeURIComponent(city.slug)}/zones`)).zones,
+    })),
+  );
+}
+
+/** Tipos de herramienta publicables en la ciudad (cada uno con el esquema de atributos efectivo). */
+export async function loadRentalCategories(citySlug: string): Promise<ApiCategory[]> {
+  const { categories } = await backendJSON<{ categories: ApiCategory[] }>(
+    `/catalog/categories?vertical=rental&city=${encodeURIComponent(citySlug)}`,
+  );
+  return categories;
+}
+
 /** Nombre visible de un slug (distrito o categoría); undefined si no existe. */
 export function nameOf(list: { slug: string; name: string }[], slug: string | undefined): string | undefined {
   return slug ? list.find((item) => item.slug === slug)?.name : undefined;
