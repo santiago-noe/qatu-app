@@ -1,6 +1,5 @@
-import AxeBuilder from "@axe-core/playwright";
 import { expect, test, type BrowserContext, type Page } from "@playwright/test";
-import { AFTER_SIGNUP, apiAvailable, CODE_MAIL, mailedCode, signup, VERIFY_EMAIL_URL } from "./helpers";
+import { AFTER_SIGNUP, apiAvailable, CODE_MAIL, expectAccessible, mailedCode, signup, VERIFY_EMAIL_URL } from "./helpers";
 
 // Arrendador (feature 003): activar el perfil, crear un borrador, completar la herramienta y usar
 // las acciones de "Mis publicaciones". Una sola cuenta recorre todo, en serie.
@@ -24,7 +23,7 @@ test.afterAll(async () => {
   await context?.close();
 });
 
-const noViolations = async () => expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
+const noViolations = () => expectAccessible(page);
 
 test("activar el perfil de arrendador desde el panel", async () => {
   await page.getByRole("link", { name: "Publicar mis herramientas" }).click();
@@ -64,21 +63,22 @@ test("crear un borrador y completar la herramienta", async () => {
   await expect(page.getByLabel("Marca (opcional)")).toBeVisible();
   await noViolations();
 
-  await page.getByLabel("Marca (opcional)").fill("Bosch");
-  await page.getByLabel("Potencia (W) (opcional)").fill("800.5");
-  await page.getByRole("button", { name: "Guardar" }).click();
-  await expect(page.getByText("Escribe un número entero.")).toBeVisible();
+  const tool = page.getByRole("form", { name: "La herramienta" });
+  await tool.getByLabel("Marca (opcional)").fill("Bosch");
+  await tool.getByLabel("Potencia (W) (opcional)").fill("800.5");
+  await tool.getByRole("button", { name: "Guardar" }).click();
+  await expect(tool.getByText("Escribe un número entero.")).toBeVisible();
 
-  await page.getByLabel("Potencia (W) (opcional)").fill("800");
-  await page.getByLabel("Energía (opcional)").selectOption({ label: "Eléctrica" });
-  await page.getByLabel("Accesorios incluidos (opcional)").fill("Maletín\nmaletín\nBroca de 10 mm");
-  await page.getByRole("button", { name: "Guardar" }).click();
-  await expect(page.getByRole("status").filter({ hasText: "Guardamos los cambios." })).toBeVisible();
+  await tool.getByLabel("Potencia (W) (opcional)").fill("800");
+  await tool.getByLabel("Energía (opcional)").selectOption({ label: "Eléctrica" });
+  await tool.getByLabel("Accesorios incluidos (opcional)").fill("Maletín\nmaletín\nBroca de 10 mm");
+  await tool.getByRole("button", { name: "Guardar" }).click();
+  await expect(tool.getByRole("status")).toContainText("Guardamos los cambios.");
 
   // Lo guardado vuelve al recargar (accesorios sin repetidos).
   await page.reload();
-  await expect(page.getByLabel("Potencia (W) (opcional)")).toHaveValue("800");
-  await expect(page.getByLabel("Accesorios incluidos (opcional)")).toHaveValue("Maletín\nBroca de 10 mm");
+  await expect(tool.getByLabel("Potencia (W) (opcional)")).toHaveValue("800");
+  await expect(tool.getByLabel("Accesorios incluidos (opcional)")).toHaveValue("Maletín\nBroca de 10 mm");
 });
 
 test("las acciones de Mis publicaciones", async () => {
@@ -92,7 +92,7 @@ test("las acciones de Mis publicaciones", async () => {
 
   await card.getByRole("button", { name: "Duplicar: Rotomartillo Bosch 800 W" }).click();
   await expect(page.getByRole("heading", { level: 1, name: "Rotomartillo Bosch 800 W (copia)" })).toBeVisible();
-  await expect(page.getByLabel("Marca (opcional)")).toHaveValue("Bosch");
+  await expect(page.getByRole("form", { name: "La herramienta" }).getByLabel("Marca (opcional)")).toHaveValue("Bosch");
 
   await page.getByRole("link", { name: "Mis publicaciones" }).click();
   const copy = page.getByRole("article", { name: "Rotomartillo Bosch 800 W (copia)" });
@@ -101,4 +101,73 @@ test("las acciones de Mis publicaciones", async () => {
   await expect(copy.getByText("Archivada", { exact: true })).toBeVisible();
   await expect(copy.getByRole("link", { name: /^Ver / })).toBeVisible();
   await noViolations();
+});
+
+// Una foto PNG mínima pero válida (qatu-api la procesa como cualquier otra).
+const TINY_PNG = Buffer.from(
+  "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=",
+  "base64",
+);
+const photoFile = (name: string) => ({ name, mimeType: "image/png", buffer: TINY_PNG });
+
+test("completar precios, entrega, reglas y fotos, y enviarla", async () => {
+  test.setTimeout(90_000);
+  await page.getByRole("link", { name: "Editar Rotomartillo Bosch 800 W" }).click();
+  await expect(page.getByRole("navigation", { name: "Secciones de la publicación" })).toBeVisible();
+  const send = page.getByRole("button", { name: "Enviar a publicar" });
+  await expect(send).toBeDisabled();
+
+  // Precios y garantía: la sugerida sale del valor de reposición (riesgo medio: 30 %).
+  const prices = page.getByRole("form", { name: "Precios y garantía" });
+  await prices.getByLabel("Por día").fill("35");
+  await prices.getByLabel("Valor de reposición").fill("450");
+  await expect(prices.getByText("Sugerida: S/ 140.00")).toBeVisible();
+  await prices.getByLabel("Garantía").fill("900");
+  await prices.getByRole("button", { name: "Guardar" }).click();
+  await expect(prices.getByText(/Elige una garantía entre/)).toBeVisible();
+  await prices.getByRole("button", { name: /Usar la sugerida/ }).click();
+  await prices.getByRole("button", { name: "Guardar" }).click();
+  await expect(prices.getByRole("status")).toContainText("Guardamos los cambios.");
+
+  // Entrega: recojo en el centro del mapa (alternativa de teclado) y delivery a un distrito.
+  const delivery = page.getByRole("form", { name: "Entrega" });
+  await delivery.getByLabel("Ofrezco recojo en un punto").check();
+  await expect(delivery.getByRole("region", { name: "Mapa para marcar el punto de recojo" })).toBeVisible();
+  await delivery.getByRole("button", { name: "Guardar" }).click();
+  await expect(delivery.getByText("Marca en el mapa el punto de recojo.")).toBeVisible();
+  await delivery.getByRole("button", { name: "Marcar el centro del mapa" }).click();
+  await expect(delivery.getByText(/Punto marcado: -13\./)).toBeVisible();
+  await delivery.getByLabel("Ofrezco delivery").check();
+  await delivery.getByLabel("Tarifa de delivery").fill("10");
+  await delivery.getByLabel("Carmen Alto").check();
+  await delivery.getByRole("button", { name: "Guardar" }).click();
+  await expect(delivery.getByRole("status")).toContainText("Guardamos los cambios.");
+  await expect(delivery.getByText(/Así lo verá el público: un círculo de unos 500 m/)).toBeVisible();
+
+  // Reglas.
+  const rules = page.getByRole("form", { name: "Reglas" });
+  await rules.getByLabel(/Flexible/).check();
+  await rules.getByLabel("Alquiler mínimo").selectOption({ label: "1 semana" });
+  await rules.getByLabel("Alquiler máximo").selectOption({ label: "1 día" });
+  await rules.getByRole("button", { name: "Guardar" }).click();
+  await expect(rules.getByText("La duración máxima no puede ser menor que la mínima.")).toBeVisible();
+  await rules.getByLabel("Alquiler máximo").selectOption({ label: "30 días" });
+  await rules.getByRole("button", { name: "Guardar" }).click();
+  await expect(rules.getByRole("status")).toContainText("Guardamos los cambios.");
+
+  // Fotos: se suben directo al almacenamiento y se preparan en segundo plano.
+  const photos = page.getByRole("region", { name: "Fotos" });
+  await photos.getByLabel("Agregar fotos").setInputFiles([photoFile("1.png"), photoFile("2.png"), photoFile("3.png")]);
+  await expect(photos.getByText("3 de 3 fotos mínimas listas")).toBeVisible({ timeout: 30_000 });
+  await expect(photos.getByRole("img", { name: "Foto 1 de Rotomartillo Bosch 800 W" })).toBeVisible();
+  await expect(photos.getByText("Portada", { exact: true })).toBeVisible();
+  await photos.getByLabel("Agregar la foto de la placa").setInputFiles(photoFile("placa.png"));
+  await expect(photos.getByRole("img", { name: "Placa de Rotomartillo Bosch 800 W" })).toBeVisible({ timeout: 30_000 });
+  await noViolations();
+
+  // Todo listo: primera publicación del arrendador, va a revisión.
+  await expect(send).toBeEnabled();
+  await send.click();
+  await expect(page.getByText("En revisión", { exact: true })).toBeVisible();
+  await expect(page.getByRole("button", { name: "Guardar" })).toHaveCount(0);
 });
