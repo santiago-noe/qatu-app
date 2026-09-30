@@ -1,7 +1,7 @@
 // Datos de la sesión para Server Components de las páginas protegidas.
 import { cache } from "react";
 import { cookies } from "next/headers";
-import { redirect } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { backendFetch, type ApiUser } from "./api";
 import { ROUTES, SESSION_COOKIE, withNext } from "./session";
 
@@ -30,6 +30,8 @@ export async function authedGet<T>(path: string, returnTo: string = ROUTES.dashb
     const code = (body as { error?: string } | null)?.error;
     redirect(code === "dos_pasos_requerido" ? withNext(ROUTES.twoFactor, returnTo) : ROUTES.unauthorized);
   }
+  // Lo pedido no existe (una ciudad borrada de la URL, por ejemplo): la página 404 de la app.
+  if (status === 404) notFound();
   if (status < 200 || status >= 300) throw new Error(`qatu-api GET ${path} respondió ${status}`);
   return body as T;
 }
