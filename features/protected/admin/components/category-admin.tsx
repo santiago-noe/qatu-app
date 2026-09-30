@@ -19,6 +19,7 @@ import {
 import { useAdminAction } from "@/features/protected/admin/lib/use-admin-action";
 import { ActionStatus } from "./action-status";
 import { Badge } from "./badge";
+import { CategoryCities } from "./category-cities";
 import { CategoryForm } from "./category-form";
 
 type Editing = { mode: "edit"; id: string } | { mode: "create"; parentId: string } | null;
@@ -28,7 +29,8 @@ interface CategoryAdminProps {
   roots: ApiAdminCategory[];
 }
 
-// Árbol de categorías (o de oficios) de una vertical: crear, editar, encender y apagar. En
+// Árbol de categorías (o de oficios) de una vertical: crear, editar, encender y apagar, en general
+// o por ciudad. En
 // escritorio el formulario va en un panel fijo a la derecha; en el celular, dentro de la lista.
 // Cada cambio limpia la caché del catálogo en qatu-api: la landing lo muestra en la siguiente visita.
 export function CategoryAdmin({ vertical, roots }: CategoryAdminProps) {
@@ -61,16 +63,18 @@ export function CategoryAdmin({ vertical, roots }: CategoryAdminProps) {
     if (!editing) return null;
     const category = editing.mode === "edit" ? find(editing.id) : undefined;
     return (
-      <CategoryForm
-        key={editing.mode === "edit" ? editing.id : `new-${editing.parentId}`}
-        vertical={vertical}
-        roots={roots}
-        category={category}
-        parentId={editing.mode === "create" ? editing.parentId : undefined}
-        onDone={() => done(category ? `Guardamos «${category.name}».` : "Creada.")}
-        onCancel={() => setEditing(null)}
-        className={className}
-      />
+      <div className={cn("flex flex-col gap-6", className)}>
+        <CategoryForm
+          key={editing.mode === "edit" ? editing.id : `new-${editing.parentId}`}
+          vertical={vertical}
+          roots={roots}
+          category={category}
+          parentId={editing.mode === "create" ? editing.parentId : undefined}
+          onDone={() => done(category ? `Guardamos «${category.name}».` : "Creada.")}
+          onCancel={() => setEditing(null)}
+        />
+        {category && <CategoryCities key={category.id} category={category} />}
+      </div>
     );
   }
 
