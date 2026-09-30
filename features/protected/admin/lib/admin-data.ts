@@ -1,6 +1,6 @@
 // Datos del panel admin para Server Components. qatu-api exige rol admin y segundo paso:
 // sin el código, authedGet lleva a /auth/two-factor y vuelve a returnTo.
-import type { ApiAdminCategory, ApiAdminCity, ApiSetting, Vertical } from "@/lib/api";
+import type { ApiAdminCategory, ApiAdminCity, ApiAdminZone, ApiSetting, Vertical } from "@/lib/api";
 import { authedGet } from "@/lib/current-user";
 
 export async function loadCategories(vertical: Vertical, returnTo: string) {
@@ -14,6 +14,11 @@ export async function loadCategories(vertical: Vertical, returnTo: string) {
 export async function loadCities(returnTo: string) {
   const { cities } = await authedGet<{ cities: ApiAdminCity[] }>("/admin/cities", returnTo);
   return cities;
+}
+
+/** Una ciudad (también apagada) con todos sus distritos; 404 si no existe. */
+export function loadCityZones(slug: string, returnTo: string) {
+  return authedGet<{ city: ApiAdminCity; zones: ApiAdminZone[] }>(`/admin/cities/${encodeURIComponent(slug)}/zones`, returnTo);
 }
 
 export async function loadSettings(returnTo: string) {
