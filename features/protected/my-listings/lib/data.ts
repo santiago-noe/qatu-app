@@ -1,6 +1,6 @@
 // Datos del arrendador para Server Components (usan la sesión de la cookie).
 import { redirect } from "next/navigation";
-import type { ApiLender, ApiListing } from "@/lib/api";
+import type { ApiLender, ApiListing, ApiPhoto } from "@/lib/api";
 import { authedGet } from "@/lib/current-user";
 import { ROUTES, withNext } from "@/lib/session";
 
@@ -24,4 +24,12 @@ export async function loadMyListings(returnTo: string): Promise<ApiListing[]> {
 /** Una publicación del usuario; 404 si no existe o es de otra persona. */
 export function loadMyListing(id: string): Promise<ApiListing> {
   return authedGet<ApiListing>(`/me/listings/${encodeURIComponent(id)}`, `${ROUTES.myListings}/${id}`);
+}
+
+export async function loadMyListingPhotos(id: string): Promise<ApiPhoto[]> {
+  const { photos } = await authedGet<{ photos: ApiPhoto[] }>(
+    `/me/listings/${encodeURIComponent(id)}/photos`,
+    `${ROUTES.myListings}/${id}`,
+  );
+  return photos;
 }
