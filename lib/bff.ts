@@ -40,7 +40,7 @@ export function passError(res: Response, body: unknown) {
 }
 
 interface ForwardOptions {
-  method?: "POST" | "PUT" | "PATCH";
+  method?: "POST" | "PUT" | "PATCH" | "DELETE";
   /** Registro o inicio de sesión: el token va a la cookie httpOnly y sale del cuerpo. */
   startsSession?: boolean;
 }
