@@ -127,3 +127,66 @@ export function parseAccessories(text: string): string[] {
   }
   return out;
 }
+
+// Reglas de la publicación (docs/02, A7, y docs/05, niveles de verificación).
+
+export const BOOKING_MODES = [
+  { value: "request", label: "Por solicitud", hint: "Revisas cada pedido y lo aceptas o rechazas." },
+  { value: "instant", label: "Inmediata", hint: "Se confirma sola si las fechas están libres." },
+] as const;
+
+export const CANCEL_POLICIES = [
+  { value: "flexible", label: "Flexible", hint: "Reembolso total si cancelan hasta 24 horas antes." },
+  { value: "moderate", label: "Moderada", hint: "Reembolso total hasta 72 horas antes; después, el 50 %." },
+  { value: "strict", label: "Estricta", hint: "Reembolso total hasta 7 días antes; después, nada (salvo que la vuelvas a alquilar)." },
+] as const;
+
+export const VERIFICATION_LEVELS = [
+  { value: 1, label: "Nivel 1", hint: "DNI y selfie validados." },
+  { value: 2, label: "Nivel 2", hint: "Nivel 1 más 3 alquileres sin incidencias o un comprobante de domicilio." },
+] as const;
+
+/** Nivel mínimo que exige el riesgo de la categoría: el arrendador puede pedir más, nunca menos. */
+export function minVerificationFor(risk: "low" | "medium" | "high"): number {
+  return risk === "high" ? 2 : 1;
+}
+
+/** Opciones en horas para antelación y duraciones (la API admite cualquier valor en rango). */
+export const NOTICE_OPTIONS = [0, 2, 6, 12, 24, 48, 72, 168];
+export const MIN_DURATION_OPTIONS = [1, 2, 4, 8, 24, 48, 72, 168];
+export const MAX_DURATION_OPTIONS = [24, 72, 168, 336, 720, 1440, 2160];
+
+/** 0 → "Sin antelación", 12 → "12 horas", 48 → "2 días", 168 → "1 semana". */
+export function formatHours(hours: number): string {
+  if (hours === 0) return "Sin antelación";
+  if (hours % 168 === 0 && hours >= 168 && hours < 720) return hours === 168 ? "1 semana" : `${hours / 168} semanas`;
+  if (hours % 24 === 0) return hours === 24 ? "1 día" : `${hours / 24} días`;
+  return hours === 1 ? "1 hora" : `${hours} horas`;
+}
+
+/** Las opciones con el valor guardado incluido aunque no esté en la lista. */
+export function hourOptions(options: number[], current: number): { value: string; label: string }[] {
+  const all = options.includes(current) ? options : [...options, current].sort((a, b) => a - b);
+  return all.map((h) => ({ value: String(h), label: formatHours(h) }));
+}
+
+export interface ChecklistItem {
+  key: "day_price" | "replacement_value" | "fulfillment" | "photos";
+  label: string;
+  done: boolean;
+}
+
+/**
+ * Lo que falta para enviar a publicar (lo mismo que revisa qatu-api al enviar; la garantía en rango
+ * y los atributos obligatorios los revisa el API).
+ */
+export function publishChecklist(l: ApiListing, readyPhotos: number): ChecklistItem[] {
+  const pickupOk = l.pickup_enabled && l.pickup_location !== null;
+  const deliveryOk = l.delivery_enabled && l.delivery_zone_ids.length > 0;
+  return [
+    { key: "day_price", label: "Precio por día", done: l.prices.day > 0 },
+    { key: "replacement_value", label: "Valor de reposición y garantía", done: l.replacement_value > 0 },
+    { key: "fulfillment", label: "Recojo con su punto o delivery con distritos", done: pickupOk || deliveryOk },
+    { key: "photos", label: `Al menos 3 fotos (tienes ${readyPhotos})`, done: readyPhotos >= 3 },
+  ];
+}
