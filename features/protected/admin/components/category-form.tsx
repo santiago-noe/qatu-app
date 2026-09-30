@@ -77,6 +77,17 @@ export function CategoryForm({ vertical, roots, category, parentId, onDone, onCa
     setAlert(undefined);
     if (Object.keys(clientErrors).length > 0) return;
 
+    const prohibited = form.get("prohibited") === "on";
+    if (
+      category &&
+      !category.prohibited &&
+      prohibited &&
+      !window.confirm(
+        `¿Prohibir «${category.name}»? Sus publicaciones activas${hasChildren ? " y las de sus tipos" : ""} saldrán del catálogo y nadie podrá publicar en ella.`,
+      )
+    )
+      return;
+
     const body = {
       parent_id: text("parent_id"),
       slug: draft.slug.trim(),
@@ -86,7 +97,7 @@ export function CategoryForm({ vertical, roots, category, parentId, onDone, onCa
       sort_order: Number(draft.sortOrder),
       attributes_schema: parseSchema(draft.schema),
       risk_level: text("risk_level"),
-      prohibited: form.get("prohibited") === "on",
+      prohibited,
       enabled: form.get("enabled") === "on",
     };
     const result = category
