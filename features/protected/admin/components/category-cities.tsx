@@ -6,7 +6,7 @@ import { callBff } from "@/lib/bff-client";
 import { cn } from "@/lib/utils";
 import { useAdminAction } from "@/features/protected/admin/lib/use-admin-action";
 import { ActionStatus } from "./action-status";
-import { Badge } from "./badge";
+import { Badge } from "@/components/ui/badge";
 
 type Choice = "global" | "on" | "off";
 

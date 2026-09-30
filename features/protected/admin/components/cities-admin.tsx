@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import type { ApiAdminCity } from "@/lib/api";
 import { useAdminAction } from "@/features/protected/admin/lib/use-admin-action";
 import { ActionStatus } from "./action-status";
-import { Badge } from "./badge";
+import { Badge } from "@/components/ui/badge";
 import { CityForm } from "./city-form";
 
 // Ciudades (feature flag): apagada, su catálogo y sus distritos dejan de mostrarse al público.

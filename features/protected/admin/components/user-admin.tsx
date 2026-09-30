@@ -10,7 +10,7 @@ import { validateEmail } from "@/features/auth/shared/lib/validation";
 import { INTERNAL_ROLES, roleLabel, rolesDiff } from "@/features/protected/admin/lib/users";
 import { useAdminAction } from "@/features/protected/admin/lib/use-admin-action";
 import { ActionStatus } from "./action-status";
-import { Badge } from "./badge";
+import { Badge } from "@/components/ui/badge";
 import { UserAvatar } from "./user-avatar";
 
 // Buscar una cuenta por su correo exacto (no hay listado masivo: datos mínimos, Ley 29733),

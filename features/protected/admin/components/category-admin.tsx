@@ -18,7 +18,7 @@ import {
 } from "@/features/protected/admin/lib/categories";
 import { useAdminAction } from "@/features/protected/admin/lib/use-admin-action";
 import { ActionStatus } from "./action-status";
-import { Badge } from "./badge";
+import { Badge } from "@/components/ui/badge";
 import { CategoryCities } from "./category-cities";
 import { CategoryForm } from "./category-form";
 

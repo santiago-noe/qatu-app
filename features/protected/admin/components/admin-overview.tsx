@@ -17,7 +17,7 @@ import { IconBadge } from "@/components/layout/icon-badge";
 import { Button } from "@/components/ui/button";
 import { formatBps, formatWhen, SETTINGS } from "@/features/protected/admin/lib/settings";
 import type { summarize } from "@/features/protected/admin/lib/overview";
-import { Badge } from "./badge";
+import { Badge } from "@/components/ui/badge";
 
 type Summary = ReturnType<typeof summarize>;
 
