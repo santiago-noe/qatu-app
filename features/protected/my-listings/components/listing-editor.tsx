@@ -2,6 +2,7 @@ import type { ApiCategory, ApiListing, ApiPhoto, ApiZone } from "@/lib/api";
 import { Badge } from "@/components/ui/badge";
 import { findToolType, isEditable, STATUS_TEXT } from "@/features/protected/my-listings/lib/listings";
 import { splitPhotos } from "@/features/protected/my-listings/lib/photos";
+import { CalendarSection } from "./calendar-section";
 import { LogisticsSection } from "./logistics-section";
 import { PhotosSection } from "./photos-section";
 import { PricesSection } from "./prices-section";
@@ -15,6 +16,7 @@ const SECTIONS = [
   { id: "precios", label: "Precios y garantía" },
   { id: "entrega", label: "Entrega" },
   { id: "reglas", label: "Reglas" },
+  { id: "calendario", label: "Calendario" },
 ];
 
 interface ListingEditorProps {
@@ -67,6 +69,7 @@ export function ListingEditor({ listing, categories, photos, cityCenter, zones }
         <PricesSection listing={listing} editable={editable} />
         <LogisticsSection listing={listing} editable={editable} cityCenter={cityCenter} zones={zones} />
         <RulesSection listing={listing} editable={editable} risk={risk} />
+        <CalendarSection listing={listing} />
         {canSubmit && <SubmitPanel listing={listing} readyPhotos={splitPhotos(photos).ready} />}
       </div>
     </div>
