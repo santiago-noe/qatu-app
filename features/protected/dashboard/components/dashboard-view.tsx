@@ -20,11 +20,11 @@ export function DashboardView({ user, children }: DashboardViewProps) {
   return (
     <div className="min-h-screen bg-bg-soft">
       <PanelHeader>
-        {user.roles.includes("admin") && (
+        {(user.roles.includes("admin") || user.roles.includes("moderator")) && (
           <Button asChild variant="outline" className={PANEL_ACTION}>
             <Link href={ROUTES.admin}>
               <ShieldCheck strokeWidth={1.5} aria-hidden />
-              <span className={PANEL_LABEL}>Administración</span>
+              <span className={PANEL_LABEL}>{user.roles.includes("admin") ? "Administración" : "Moderación"}</span>
             </Link>
           </Button>
         )}
