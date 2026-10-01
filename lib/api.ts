@@ -270,3 +270,20 @@ export interface ApiPhotoUpload {
   photo: ApiPhoto;
   upload: { method: "PUT"; url: string; headers: Record<string, string>; expires_at: string };
 }
+
+/** Bloqueo del calendario (GET /me/listings/{id}/availability). end no se incluye. */
+export interface ApiBlock {
+  id: string;
+  start: string;
+  end: string;
+  reason: "manual" | "booking" | "hold";
+  note?: string;
+}
+
+/** Publicación en la cola de moderación (GET /moderation/listings): sin punto exacto ni placa. */
+export interface ApiReviewItem {
+  listing: ApiListing;
+  owner: { name: string; first_listing: boolean };
+  category: { id: string; name: string; risk_level: RiskLevel; attributes_schema?: unknown };
+  photos: ApiPhoto[];
+}
