@@ -1,6 +1,7 @@
 // Publicaciones del arrendador: estados, acciones permitidas y montos. Las reglas son las de
 // qatu-api (internal/core/domain/listing.go); aquí solo se muestran.
 import type { ApiCategory, ApiListing, ApiListingFields, ListingStatus } from "@/lib/api";
+import { formatHours } from "@/lib/listing-rules";
 
 export const LISTING_TITLE_MIN = 5;
 export const LISTING_TITLE_MAX = 80;
@@ -48,30 +49,6 @@ export function listingActions(status: ListingStatus): ListingAction[] {
 /** Se edita en borrador, publicada, pausada o por corregir (en revisión se congela). */
 export function isEditable(status: ListingStatus): boolean {
   return status === "draft" || status === "published" || status === "paused" || status === "rejected";
-}
-
-const soles = new Intl.NumberFormat("es-PE", { style: "currency", currency: "PEN" });
-
-/** 3500 → "S/ 35.00". Los montos viajan en céntimos enteros. */
-export function formatSoles(cents: number): string {
-  return soles.format(cents / 100);
-}
-
-/**
- * "35", "35.5" o "35,50" → 3550 céntimos, sin coma flotante. undefined si no es un monto válido
- * (negativo, más de 2 decimales o más de S/ 100 000).
- */
-export function solesToCents(raw: string): number | undefined {
-  const text = raw.trim().replace(",", ".");
-  if (!/^\d+(\.\d{1,2})?$/.test(text)) return undefined;
-  const [whole, decimals = ""] = text.split(".");
-  const cents = Number(whole) * 100 + Number(decimals.padEnd(2, "0"));
-  return cents <= 100_000_00 ? cents : undefined;
-}
-
-/** 3550 → "35.50"; 0 → "" (campo vacío = no se ofrece). */
-export function centsToInput(cents: number): string {
-  return cents > 0 ? (cents / 100).toFixed(2) : "";
 }
 
 /** Lo que el asistente vuelve a enviar completo en cada guardado (PUT con la versión). */
@@ -128,24 +105,6 @@ export function parseAccessories(text: string): string[] {
   return out;
 }
 
-// Reglas de la publicación (docs/02, A7, y docs/05, niveles de verificación).
-
-export const BOOKING_MODES = [
-  { value: "request", label: "Por solicitud", hint: "Revisas cada pedido y lo aceptas o rechazas." },
-  { value: "instant", label: "Inmediata", hint: "Se confirma sola si las fechas están libres." },
-] as const;
-
-export const CANCEL_POLICIES = [
-  { value: "flexible", label: "Flexible", hint: "Reembolso total si cancelan hasta 24 horas antes." },
-  { value: "moderate", label: "Moderada", hint: "Reembolso total hasta 72 horas antes; después, el 50 %." },
-  { value: "strict", label: "Estricta", hint: "Reembolso total hasta 7 días antes; después, nada (salvo que la vuelvas a alquilar)." },
-] as const;
-
-export const VERIFICATION_LEVELS = [
-  { value: 1, label: "Nivel 1", hint: "DNI y selfie validados." },
-  { value: 2, label: "Nivel 2", hint: "Nivel 1 más 3 alquileres sin incidencias o un comprobante de domicilio." },
-] as const;
-
 /** Nivel mínimo que exige el riesgo de la categoría: el arrendador puede pedir más, nunca menos. */
 export function minVerificationFor(risk: "low" | "medium" | "high"): number {
   return risk === "high" ? 2 : 1;
@@ -155,14 +114,6 @@ export function minVerificationFor(risk: "low" | "medium" | "high"): number {
 export const NOTICE_OPTIONS = [0, 2, 6, 12, 24, 48, 72, 168];
 export const MIN_DURATION_OPTIONS = [1, 2, 4, 8, 24, 48, 72, 168];
 export const MAX_DURATION_OPTIONS = [24, 72, 168, 336, 720, 1440, 2160];
-
-/** 0 → "Sin antelación", 12 → "12 horas", 48 → "2 días", 168 → "1 semana". */
-export function formatHours(hours: number): string {
-  if (hours === 0) return "Sin antelación";
-  if (hours % 168 === 0 && hours >= 168 && hours < 720) return hours === 168 ? "1 semana" : `${hours / 168} semanas`;
-  if (hours % 24 === 0) return hours === 24 ? "1 día" : `${hours / 24} días`;
-  return hours === 1 ? "1 hora" : `${hours} horas`;
-}
 
 /** Las opciones con el valor guardado incluido aunque no esté en la lista. */
 export function hourOptions(options: number[], current: number): { value: string; label: string }[] {

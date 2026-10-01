@@ -5,7 +5,7 @@ import { TextField } from "@/components/form/text-field";
 import { Button } from "@/components/ui/button";
 import type { ApiDepositSuggestion, ApiListing, ApiPrices } from "@/lib/api";
 import { callBff } from "@/lib/bff-client";
-import { centsToInput, formatSoles, solesToCents } from "@/features/protected/my-listings/lib/listings";
+import { centsToInput, formatSoles, solesToCents } from "@/lib/money";
 import { useListingSave } from "@/features/protected/my-listings/lib/use-listing-save";
 import { EditorSection } from "./editor-section";
 

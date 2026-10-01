@@ -10,10 +10,10 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import type { ApiListing } from "@/lib/api";
 import { callBff } from "@/lib/bff-client";
+import { formatSoles } from "@/lib/money";
 import { ROUTES } from "@/lib/session";
 import {
   ACTION_TEXT,
-  formatSoles,
   isEditable,
   listingActions,
   STATUS_TEXT,

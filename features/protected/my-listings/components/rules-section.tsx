@@ -2,16 +2,14 @@
 
 import { SelectField } from "@/components/form/select-field";
 import type { ApiListing, RiskLevel } from "@/lib/api";
+import { BOOKING_MODES, CANCEL_POLICIES, VERIFICATION_LEVELS } from "@/lib/listing-rules";
 import { cn } from "@/lib/utils";
 import {
-  BOOKING_MODES,
-  CANCEL_POLICIES,
   hourOptions,
   MAX_DURATION_OPTIONS,
   MIN_DURATION_OPTIONS,
   minVerificationFor,
   NOTICE_OPTIONS,
-  VERIFICATION_LEVELS,
 } from "@/features/protected/my-listings/lib/listings";
 import { useListingSave } from "@/features/protected/my-listings/lib/use-listing-save";
 import { EditorSection } from "./editor-section";

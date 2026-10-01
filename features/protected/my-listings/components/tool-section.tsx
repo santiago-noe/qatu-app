@@ -5,7 +5,7 @@ import { SelectField } from "@/components/form/select-field";
 import { TextareaField } from "@/components/form/textarea-field";
 import { TextField } from "@/components/form/text-field";
 import type { ApiCategory, ApiListing } from "@/lib/api";
-import { attributeFields, readAttributes } from "@/features/protected/my-listings/lib/attributes";
+import { attributeFields, readAttributes } from "@/lib/attributes";
 import {
   ACCESSORIES_MAX,
   ACCESSORY_MAX,

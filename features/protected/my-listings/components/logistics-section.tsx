@@ -4,7 +4,7 @@ import { useState } from "react";
 import { CheckboxField } from "@/components/form/checkbox-field";
 import { TextField } from "@/components/form/text-field";
 import type { ApiListing, ApiZone } from "@/lib/api";
-import { centsToInput, solesToCents } from "@/features/protected/my-listings/lib/listings";
+import { centsToInput, solesToCents } from "@/lib/money";
 import { useListingSave } from "@/features/protected/my-listings/lib/use-listing-save";
 import { EditorSection } from "./editor-section";
 import { PickupMap } from "./pickup-map";

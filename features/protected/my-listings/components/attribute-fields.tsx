@@ -3,7 +3,7 @@
 import { CheckboxField } from "@/components/form/checkbox-field";
 import { SelectField } from "@/components/form/select-field";
 import { TextField } from "@/components/form/text-field";
-import { attributeInput, type AttributeField } from "@/features/protected/my-listings/lib/attributes";
+import { attributeInput, type AttributeField } from "@/lib/attributes";
 
 interface AttributeFieldsProps {
   fields: AttributeField[];
