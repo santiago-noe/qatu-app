@@ -3,18 +3,20 @@
 import Form from "next/form";
 import { usePathname } from "next/navigation";
 import { ChevronRight, Search } from "lucide-react";
-import { locateSection } from "@/features/protected/admin/lib/admin-nav";
+import { locateSection, type StaffRole } from "@/features/protected/admin/lib/admin-nav";
 import { AdminMobileMenu } from "./admin-mobile-menu";
 import { UserAvatar } from "./user-avatar";
 
 interface AdminTopbarProps {
   name: string;
+  roles: StaffRole[];
   /** Barra lateral para el menú del celular. */
   menu: React.ReactNode;
 }
 
 // Barra superior del panel: dónde estás, buscar una cuenta por correo y quién eres.
-export function AdminTopbar({ name, menu }: AdminTopbarProps) {
+export function AdminTopbar({ name, roles, menu }: AdminTopbarProps) {
+  const isAdmin = roles.includes("admin");
   const { group, section } = locateSection(usePathname());
 
   return (
@@ -38,7 +40,9 @@ export function AdminTopbar({ name, menu }: AdminTopbarProps) {
           )}
         </p>
 
-        {/* next/form: navega sin recargar a Usuarios, que busca el correo al abrir. */}
+        {/* next/form: navega sin recargar a Usuarios, que busca el correo al abrir. Solo admin. */}
+        {!isAdmin && <span className="ml-auto" />}
+        {isAdmin && (
         <Form action="/admin/usuarios" role="search" aria-label="Búsqueda rápida" className="ml-auto w-full max-w-xs">
           <label className="relative block">
             <span className="sr-only">Buscar una cuenta por correo</span>
@@ -57,12 +61,13 @@ export function AdminTopbar({ name, menu }: AdminTopbarProps) {
             />
           </label>
         </Form>
+        )}
 
         <div className="flex shrink-0 items-center gap-2.5">
           <UserAvatar name={name} />
           <div className="hidden leading-tight md:block">
             <p className="text-sm font-medium text-ink">{name}</p>
-            <p className="text-xs text-ink-3">Administrador</p>
+            <p className="text-xs text-ink-3">{isAdmin ? "Administrador" : "Moderador"}</p>
           </div>
         </div>
       </div>

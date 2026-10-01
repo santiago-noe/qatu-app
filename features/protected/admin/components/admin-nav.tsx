@@ -3,14 +3,14 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
-import { ADMIN_GROUPS, isActiveSection } from "@/features/protected/admin/lib/admin-nav";
+import { groupsFor, isActiveSection, type StaffRole } from "@/features/protected/admin/lib/admin-nav";
 
-// Secciones del panel admin por grupos (barra lateral y menú del celular).
-export function AdminNav() {
+// Secciones del panel por grupos (barra lateral y menú del celular): solo las de sus roles.
+export function AdminNav({ roles }: { roles: StaffRole[] }) {
   const pathname = usePathname();
   return (
     <nav aria-label="Secciones de administración" className="flex flex-col gap-5">
-      {ADMIN_GROUPS.map((group, i) => (
+      {groupsFor(roles).map((group, i) => (
         <div key={group.label ?? i}>
           {group.label && (
             <p className="mb-1.5 px-3 text-[11px] font-semibold uppercase tracking-[0.08em] text-ink-3">{group.label}</p>

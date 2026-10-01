@@ -4,19 +4,22 @@ import { Logo } from "@/components/layout/logo";
 import { Button } from "@/components/ui/button";
 import { ROUTES } from "@/lib/session";
 import { LogoutButton } from "@/features/auth/shared/components/logout-button";
+import type { StaffRole } from "@/features/protected/admin/lib/admin-nav";
 import { AdminNav } from "./admin-nav";
 
 // Contenido de la barra lateral: logo, secciones y, al pie, volver al panel o cerrar sesión.
 // La usan la barra fija de escritorio y el menú del celular.
-export function AdminSidebarContent() {
+export function AdminSidebarContent({ roles }: { roles: StaffRole[] }) {
   return (
     <div className="flex h-full flex-col gap-6 p-4">
       <div className="px-2 pt-1">
         <Logo height={34} />
-        <p className="mt-2 text-xs font-medium text-ink-3">Panel de administración</p>
+        <p className="mt-2 text-xs font-medium text-ink-3">
+          {roles.includes("admin") ? "Panel de administración" : "Panel de moderación"}
+        </p>
       </div>
       <div className="flex-1 overflow-y-auto">
-        <AdminNav />
+        <AdminNav roles={roles} />
       </div>
       <div className="flex flex-col gap-2 rounded-[var(--radius-card)] border border-line bg-bg-soft p-3">
         <Button asChild variant="outline" className="h-10 justify-start rounded-[var(--radius-control)] bg-bg">

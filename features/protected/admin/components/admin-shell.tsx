@@ -1,15 +1,16 @@
+import type { StaffRole } from "@/features/protected/admin/lib/admin-nav";
 import { AdminSidebarContent } from "./admin-sidebar";
 import { AdminTopbar } from "./admin-topbar";
 
 // Marco del panel admin: barra lateral fija (escritorio) o menú (celular), barra superior y contenido.
-export function AdminShell({ name, children }: { name: string; children: React.ReactNode }) {
+export function AdminShell({ name, roles, children }: { name: string; roles: StaffRole[]; children: React.ReactNode }) {
   return (
     <div className="min-h-screen bg-bg-soft lg:grid lg:grid-cols-[260px_minmax(0,1fr)]">
       <aside className="sticky top-0 hidden h-screen border-r border-line bg-bg lg:block">
-        <AdminSidebarContent />
+        <AdminSidebarContent roles={roles} />
       </aside>
       <div className="min-w-0">
-        <AdminTopbar name={name} menu={<AdminSidebarContent />} />
+        <AdminTopbar name={name} roles={roles} menu={<AdminSidebarContent roles={roles} />} />
         <main className="mx-auto max-w-[1400px] px-4 py-6 sm:px-6 lg:px-8 lg:py-8">{children}</main>
       </div>
     </div>
